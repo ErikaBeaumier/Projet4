@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Billetterie du Louvre{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/lux/bootstrap.min.css">
+        {% block stylesheets %}{% endblock %}
+    </head>
+    
+    <body>
+    	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+				<a class="navbar-brand" href="{{ path('home') }}">Musée du Louvre</a>
+			  	
+			  	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+			    		<span class="navbar-toggler-icon"></span>
+			  	</button>
+
+			  	<div class="collapse navbar-collapse" id="navbarColor01">
+			   		
+			   		<ul class="navbar-nav mr-auto">
+			      		<li class="nav-item">
+			       	 		<a class="nav-link" href="{{ path('prices') }}">Tarifs</a>
+			      		</li>
+			      		<li class="nav-item">
+			        		<a class="nav-link" href="{{ path('ticketing') }}">Réserver un billet</a>
+			      		</li>
+			      	</ul>
+			  	</div>
+		</nav>
+        
+        <div class="container">
+            {% block header %}
+                <h1>Bienvenue sur la <a href="{{ path('ticketing') }}">billetterie</a> du Musée du Louvre</h1><br />
+                <a href="{{ path('ticketing') }}" class="btn btn-primary">Réservation</a>
+            {% endblock %}
+        </div>
+
+        <br /><div class="container">
+        	{% block body %}   		
+        	{% endblock %}
+        </div>
+        
+        <div class="container">
+        	{% block footer %}
+        		Paiement 100 % sécurisé | <a href="{{ path('home') }}">Accueil</a> | <a href="{{ path('prices') }}">Tarifs</a> | <a href="{{ path('ticketing') }}">Billetterie</a><br />
+        		copyright 2019 | Erika BEAUMIER | Projet 4_OpenClassrooms
+        	{% endblock %}
+        </div>
+        
+        {% block javascripts %}{% endblock %}
+    
+    </body>
+</html>

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig'%}
+
+{% block body %}
+
+	<h1>Récapitulatif</h1>
+
+		<section class="seconds">
+			{% for second in seconds %}
+				{{ second.name }}<br />
+				{{ second.firstName }}<br />
+				{{ second.birthDate | date('d/m/Y')}}<br />
+				{{ second.country }}<br />
+			{% endfor %}
+		</section>
+
+{% endblock %}
