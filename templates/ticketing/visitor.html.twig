@@ -1,0 +1,21 @@
+{% extends 'base.html.twig'%}
+
+{% form_theme formVisitor 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+
+	<h1>Remplissez le(s) formulaire(s)</h1>
+		
+		{{ form_start(formVisitor) }}
+
+		{{ form_row(formVisitor.name) }}
+		{{ form_row(formVisitor.firstName) }}
+		{{ form_row(formVisitor.birthday) }}
+		{{ form_row(formVisitor.country) }}
+		{{ form_row(formVisitor.reduc) }}
+
+		<button type="submit" class="btn btn-success">Valider</button>
+
+		{{ form_end(formVisitor) }}
+
+{% endblock %}

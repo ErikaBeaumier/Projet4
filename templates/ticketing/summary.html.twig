@@ -1,0 +1,20 @@
+{% extends 'base.html.twig'%}
+
+{% block body %}
+
+	<h1>Récapitulatif</h1>
+
+		<section class="visitors">
+			{% for visitor in visitors %}
+				{{ visitor.name }}<br />
+				{{ visitor.firstName }}<br />
+				{{ visitor.birthday | date('d/m/Y')}}<br />
+				{{ visitor.country }}<br />
+				{{ visitor.reduc }}<br />
+			{% endfor %}
+
+			<button type="submit" class="btn btn-success">Modifier</button>
+			<button type="submit" class="btn btn-success">Valider</button>
+		</section>
+
+{% endblock %}
