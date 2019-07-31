@@ -3,14 +3,23 @@
 {% block body %}
 
 	<h1>Entrez vos informations de paiement</h1>
-	<p>
-		<label>Votre nom</label><input type="text" name="nom" /><br />
-		<label>Votre prénom</label><input type="text" name="prénom" /><br />
-		<label>Votre carte</label><input type="number" name="numéro de carte" /><br />
-		<label>Date d'expiration</label><input type="date" name="date d'expiration" /><br />
-		<label>Code de sécurité</label><input type="number" name="code de sécurité" /><br />
-		<label>Votre mail</label><input type="email" name="email">
-		<br /><a href="{{ path('home') }}"class="btn btn-success">Valider le paiement</a>
-	</p>
+	
+	<script src="https://js.stripe.com/v3/"></script>
+
+		<form action="/charge" method="post" id="payment-form">
+		<div class="form-row">
+			<label for="card-element">
+			Credit or debit card
+			</label>
+			<div id="card-element">
+			<!-- A Stripe Element will be inserted here. -->
+			</div>
+
+			<!-- Used to display form errors. -->
+			<div id="card-errors" role="alert"></div>
+		</div>
+
+		<button>Submit Payment</button>
+		</form>
 
 {% endblock %}
