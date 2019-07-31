@@ -1,0 +1,16 @@
+{% extends 'base.html.twig'%}
+
+{% block body %}
+
+	<h1>Entrez vos informations de paiement</h1>
+	<p>
+		<label>Votre nom</label><input type="text" name="nom" /><br />
+		<label>Votre prénom</label><input type="text" name="prénom" /><br />
+		<label>Votre carte</label><input type="number" name="numéro de carte" /><br />
+		<label>Date d'expiration</label><input type="date" name="date d'expiration" /><br />
+		<label>Code de sécurité</label><input type="number" name="code de sécurité" /><br />
+		<label>Votre mail</label><input type="email" name="email">
+		<br /><a href="{{ path('home') }}"class="btn btn-success">Valider le paiement</a>
+	</p>
+
+{% endblock %}

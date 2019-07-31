@@ -13,8 +13,9 @@
 				{{ visitor.reduc }}<br />
 			{% endfor %}
 
-			<button type="submit" class="btn btn-success">Modifier</button>
-			<button type="submit" class="btn btn-success">Valider</button>
+				<a href="{{ path('home') }}"class="btn btn-success">Modifier</a>
+				<a href="{{ path('payment') }}"class="btn btn-success">Valider</a>
+		
 		</section>
 
 {% endblock %}
