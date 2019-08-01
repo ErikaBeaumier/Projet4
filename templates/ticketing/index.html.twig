@@ -9,10 +9,20 @@
 		{{ form_start(formChoice) }}
 
 		{{ form_row(formChoice.visit) }}
-		{{ form_row(formChoice.allDay) }}
-		{{ form_row(formChoice.halfDay) }}
-		{{ form_row(formChoice.number) }}
+		
+		<div>
+			<label class="switch">
+				<span class="slider round"></span>
+			</label>
+		
+		{{ form_row(formChoice.halfDay, {'attr':{'label':"switch", 'span class':"slider round"}}) }}
 
+		</div>
+
+		{{ form_row(formChoice.tickets) }}
+
+		{{ form_row(formChoice.uuid) }}
+		
 		<button type="submit" class="btn btn-success">Valider</button>
 
 		{{ form_end(formChoice) }}

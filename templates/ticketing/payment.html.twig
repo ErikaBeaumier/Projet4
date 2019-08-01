@@ -23,3 +23,12 @@
 		</form>
 
 {% endblock %}
+
+{% block javascripts %}
+
+	<script>
+		var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+		var elements = stripe.elements();
+	</script>
+
+{% endblock %}

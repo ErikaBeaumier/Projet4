@@ -15,10 +15,10 @@ class ChoiceType extends AbstractType
     {
         $builder
             ->add('visit', DateType::class, array(
-              'widget' => 'single_text',))
-            ->add('allDay')
+                'widget' => 'single_text',))
             ->add('halfDay')
-            ->add('number')
+            ->add('tickets')
+            ->add('uuid')
         ;
     }
 

@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "eternicode/bootstrap-datepicker": "^1.9",
+        "ramsey/uuid-doctrine": "^1.5",
         "sensio/framework-extra-bundle": "^5.1",
         "stripe/stripe-php": "^6.40",
         "symfony/asset": "4.3.*",

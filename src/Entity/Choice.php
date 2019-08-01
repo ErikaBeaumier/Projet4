@@ -24,17 +24,17 @@ class Choice
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $allDay;
-
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
     private $halfDay;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $number;
+    private $tickets;
+
+    /**
+     * @ORM\Column(type="uuid")
+     */
+    private $uuid;
 
     public function getId(): ?int
     {
@@ -53,18 +53,6 @@ class Choice
         return $this;
     }
 
-    public function getAllDay(): ?bool
-    {
-        return $this->allDay;
-    }
-
-    public function setAllDay(?bool $allDay): self
-    {
-        $this->allDay = $allDay;
-
-        return $this;
-    }
-
     public function getHalfDay(): ?bool
     {
         return $this->halfDay;
@@ -77,14 +65,26 @@ class Choice
         return $this;
     }
 
-    public function getNumber(): ?int
+    public function getTickets(): ?int
     {
-        return $this->number;
+        return $this->tickets;
     }
 
-    public function setNumber(int $number): self
+    public function setTickets(int $tickets): self
     {
-        $this->number = $number;
+        $this->tickets = $tickets;
+
+        return $this;
+    }
+
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid($uuid): self
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }
