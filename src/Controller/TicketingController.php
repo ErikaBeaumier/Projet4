@@ -11,7 +11,9 @@ use App\Entity\Visitor;
 use App\Repository\VisitorRepository;
 use App\Form\VisitorType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Persistence\ObjectManager;
+use App\Service\Schedule;
 
 class TicketingController extends AbstractController
 {
@@ -55,12 +57,13 @@ class TicketingController extends AbstractController
     /**
     * @Route("/", name="home")
     */
-    public function home()
+    public function home(Schedule $schedule)
     {
-    	return $this->render('ticketing/home.html.twig',
-    		[
-    			'Title' => "Bienvenue sur la billetterie du Musée du Louvre",
-    		]);
+        return $this->render('ticketing/home.html.twig',
+                            [
+                                'Opening' => $schedule->opening(),
+                                'Closing' => $schedule->closing(),
+                            ]);
     }
 
     /**

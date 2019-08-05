@@ -28,29 +28,52 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Service\Disabled:
+    App\Service\Schedule:
         arguments:
             $daysOfWeek:
                 - 'Lundi : 9 h - 18 h'
-                - 'Mardi : Fermé'
+                - 'Mardi : Ferme'
                 - 'Mercredi : 9 h - 18 h'
                 - 'Jeudi : 9 h - 18 h'
                 - 'Vendredi : 9 h - 18 h'
                 - 'Samedi : 9 h - 18 h'
-                - 'Dimanche : Fermé'
+                - 'Dimanche : Ferme'
             $staticDatesText:
                 - 'Tous les mardi'
                 - 'Tous les dimanche'
-                - 'Lundi de Pâques'
+                - '1er janvier'
+                - 'Lundi de Paques'
+                - '1er mai'
+                - '8 mai'
                 - 'Jeudi Ascension'
                 - 'Lundi de Pentecote'
-            $staticDates:
-                - 2019-01-01
-                - 2019-05-01
-                - 2019-05-08
-                - 2019-07-14
-                - 2019-08-15
-                - 2019-11-01
-                - 2019-11-11
-                - 2019-12-25
+                - '14 juillet'
+                - '15 aout'
+                - '1er novembre'
+                - '11 novembre'
+                - 'Noel'
+    
+    App\Service\Prices:
+        arguments:
+            $baby:
+                - 'Free'
+            $child:
+                - '8 €'
+            $adult:
+                - '16 €'
+            $senior:
+                - '12 €'
+            $reduc:
+                - '50 %'
+
+    App\Service\Ages:
+        arguments:
+            $babyAge:
+                - 4
+            $childAge:
+                - 12
+            $adultAge:
+                - 60
+            $seniorAge:
+                - 100
     
