@@ -17,4 +17,12 @@ class Prices
         $this->senior = $senior;
         $this->reduc = $reduc;
     }
+
+    /*public function normal()
+    {
+        return $this->$baby;
+                    ->$child;
+                    ->$adult;
+                    ->$senior;
+    }*/
 }

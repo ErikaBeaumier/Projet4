@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Persistence\ObjectManager;
 use App\Service\Schedule;
+use App\Service\Prices;
+use App\Service\Ages;
 
 class TicketingController extends AbstractController
 {

@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bundle\FrameworkBundle\Form\FormType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class ChoiceType extends AbstractType
 {
@@ -15,6 +16,8 @@ class ChoiceType extends AbstractType
     {
         $builder
             ->add('visit', DateType::class, array(
+                'html5'=>false,
+                'input'=>'string',
                 'widget' => 'single_text',))
             ->add('halfDay')
             ->add('tickets')

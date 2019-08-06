@@ -8,7 +8,10 @@
 
 	<h3>Horaires du musée</h3>
 	<p>
-		{{ Opening }}
+		{% for open in Opening %}
+		{{ open }} <br>
+		{% endfor %}
+
 		<br />L'évacuation des salles débute à 17 h 30.<br />		
 	</p>
 			

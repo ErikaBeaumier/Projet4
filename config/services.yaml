@@ -52,6 +52,9 @@ services:
                 - '1er novembre'
                 - '11 novembre'
                 - 'Noel'
+            $closedDay:
+                - 0
+                - 2
     
     App\Service\Prices:
         arguments:
