@@ -45,7 +45,7 @@ class TicketingController extends AbstractController
 
         $form->handleRequest($request);
 
-        $choice->uuid=Uuid::uuid4();
+        //$choice->uuid=Uuid::uuid4();
 
         if($form->isSubmitted() && $form->isValid())
         {

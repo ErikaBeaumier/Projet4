@@ -31,10 +31,10 @@ class Prices
     public function half()
     {
         return [
-            'baby'=>$this->baby * $this->reduc,
-            'child'=>$this->child * $this->reduc,
-            'adult'=>$this->adult * $this->reduc,
-            'senior'=>$this->senior * $this->reduc
+                'baby'=>$this->baby * $this->reduc,
+                'child'=>$this->child * $this->reduc,
+                'adult'=>$this->adult * $this->reduc,
+                'senior'=>$this->senior * $this->reduc
         ];
     }
 }
