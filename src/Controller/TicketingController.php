@@ -16,6 +16,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 use App\Service\Schedule;
 use App\Service\Prices;
 use App\Service\Ages;
+use Ramsey\Uuid\Uuid;
+//use Symfony\Component\Validator\Constraints\Uuid;
 
 class TicketingController extends AbstractController
 {
@@ -42,6 +44,8 @@ class TicketingController extends AbstractController
         $form = $this->createForm(ChoiceType::class, $choice);
 
         $form->handleRequest($request);
+
+        $choice->uuid=Uuid::uuid4();
 
         if($form->isSubmitted() && $form->isValid())
         {
@@ -71,9 +75,13 @@ class TicketingController extends AbstractController
     /**
     * @Route("/prices", name="prices")
     */
-    public function prices()
+    public function prices(Prices $price)
     {
-    	return $this->render('ticketing/prices.html.twig');
+        return $this->render('ticketing/prices.html.twig',
+                            [
+                                'normal' => $price->standard(),
+                                'reduit' => $price->half(),
+                            ]);
     }
 
     /**

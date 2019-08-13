@@ -59,15 +59,15 @@ services:
     App\Service\Prices:
         arguments:
             $baby:
-                - 'Free'
+                0
             $child:
-                - '8 €'
+                8
             $adult:
-                - '16 €'
+                16
             $senior:
-                - '12 €'
+                12
             $reduc:
-                - '50 %'
+                0.5
 
     App\Service\Ages:
         arguments:

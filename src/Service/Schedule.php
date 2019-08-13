@@ -21,7 +21,7 @@ class Schedule
 
     public function closing()
     {
-        return Implode(" ", $this->staticDatesText);
+        return $this->staticDatesText;
     }
 
     public function getClosedDay()

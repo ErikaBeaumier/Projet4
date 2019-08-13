@@ -16,13 +16,11 @@ class ChoiceType extends AbstractType
     {
         $builder
             ->add('visit', DateType::class, array(
-                'html5'=>false,
-                'input'=>'string',
+                /*'html5'=>false,
+                'input'=>'string',*/
                 'widget' => 'single_text',))
             ->add('halfDay')
-            ->add('tickets')
-            ->add('uuid')
-        ;
+            ->add('tickets');
     }
 
     public function configureOptions(OptionsResolver $resolver)

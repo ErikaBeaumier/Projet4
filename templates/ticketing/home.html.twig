@@ -18,7 +18,9 @@
 	<h3>Le Musée est fermé :</h3>
 			
 	<p>
-		{{ Closing }}
+		{% for close in Closing %}
+		{{ close }} <br>
+		{% endfor %}
 	</p>
 
 	<h3>Astuce !</h3>

@@ -18,11 +18,23 @@ class Prices
         $this->reduc = $reduc;
     }
 
-    /*public function normal()
+    public function standard()
     {
-        return $this->$baby;
-                    ->$child;
-                    ->$adult;
-                    ->$senior;
-    }*/
+        return [
+                'baby'=>$this->baby,
+                'child'=>$this->child,
+                'adult'=>$this->adult,
+                'senior'=>$this->senior
+        ];
+    }
+
+    public function half()
+    {
+        return [
+            'baby'=>$this->baby * $this->reduc,
+            'child'=>$this->child * $this->reduc,
+            'adult'=>$this->adult * $this->reduc,
+            'senior'=>$this->senior * $this->reduc
+        ];
+    }
 }
