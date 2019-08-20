@@ -17,7 +17,6 @@ use App\Service\Schedule;
 use App\Service\Prices;
 use App\Service\Ages;
 use Ramsey\Uuid\Uuid;
-//use Symfony\Component\Validator\Constraints\Uuid;
 
 class TicketingController extends AbstractController
 {
@@ -28,37 +27,9 @@ class TicketingController extends AbstractController
     {
         return $this->render('ticketing/index.html.twig', [
             'controller_name' => 'TicketingController',
+            'closed_day' => [0,2],
         ]);
     }
-
-    /**
-     * @Route("/ticketing", name="ticketing")
-     */    
-    public function ChoiceForm(Choice $choice = null, Request $request, ObjectManager $manager)
-    {
-        if(!$choice)
-        {
-            $choice = new Choice();
-        }            
-
-        $form = $this->createForm(ChoiceType::class, $choice);
-
-        $form->handleRequest($request);
-
-        //$choice->uuid=Uuid::uuid4();
-
-        if($form->isSubmitted() && $form->isValid())
-        {
-            $manager->persist($choice);
-            $manager->flush();
-
-            return $this->redirectToRoute('visitor', ['id' => $choice->getId()]);
-        }
-
-        return $this->render('ticketing/index.html.twig', ['formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
-        ]);
-    }
-
 
     /**
     * @Route("/", name="home")
@@ -85,10 +56,39 @@ class TicketingController extends AbstractController
     }
 
     /**
+     * @Route("/ticketing", name="ticketing")
+     */    
+    public function ChoiceForm(Choice $choice = null, Request $request, ObjectManager $manager)
+    {
+        
+        if(!$choice)
+        {
+            $choice = new Choice();
+        }            
+      
+        $form = $this->createForm(ChoiceType::class, $choice);
+       
+        $form->handleRequest($request);
+   
+        $choice->setUuid(Uuid::uuid4());
+
+       
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $manager->persist($choice);
+            $manager->flush();
+
+            return $this->redirectToRoute('visitor', ['id' => $choice->getId()]);
+        }
+
+        return $this->render('ticketing/index.html.twig', ['formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
+        ]);
+    }    
+
+    /**
     * @Route("/ticketing/form", name="visitor")
     * @Route("/ticketing/{id}/edit", name="edit")
     */
-
     public function visitorForm(Visitor $visitor = null, Request $request, ObjectManager $manager)
     {
         if(!$visitor)

@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ChoiceRepository")
@@ -28,6 +31,7 @@ class Choice
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Length(min=1, max=10)
      */
     private $tickets;
 
@@ -46,12 +50,13 @@ class Choice
         return $this->visit;
     }
 
-    public function setVisit(\DateTimeInterface $visit): self
+   public function setVisit(\DateTimeInterface $visit): self
     {
         $this->visit = $visit;
 
         return $this;
     }
+
 
     public function getHalfDay(): ?bool
     {
@@ -87,5 +92,12 @@ class Choice
         $this->uuid = $uuid;
 
         return $this;
+    }
+    
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        
+        $metadata->addPropertyConstraint('uuid', new Assert\Uuid());
+    
     }
 }

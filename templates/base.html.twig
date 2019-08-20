@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}Billetterie du Louvre{% endblock %}</title>
         <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/lux/bootstrap.min.css">
+		<link rel="stylesheet" href="https://unpkg.com/js-datepicker/dist/datepicker.min.css">
         {% block stylesheets %}{% endblock %}
     </head>
     
@@ -48,7 +49,8 @@
         	{% endblock %}
         </div>
         
-        {% block javascripts %}{% endblock %}
-    
+        {% block javascripts %}
+		<script src="datepicker.min.js"></script> 
+		{% endblock %}
     </body>
 </html>

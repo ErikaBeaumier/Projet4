@@ -5,7 +5,20 @@
 {% block javascripts %}
 	<script src="https://unpkg.com/js-datepicker"></script>
 	<script>
-		const picker = datepicker("#choice_visit", options)
+		function isOpen(date){
+			var day = date.getDay();
+			var closed = [0,2];
+			if(closed.indexOf(day)==-1) return false;
+			return true;
+		}
+	
+		const picker = datepicker("#choice_visit", {
+		// Disable every Tuesday and sunday on the calendar (for any given month).
+		formatter: (input, date, instance) => {
+				const value = date.toLocaleDateString();
+			input.value = value;
+		}, 
+		disabler: date => isOpen(date) })
 	</script>
 {% endblock %}
 {% form_theme formChoice 'bootstrap_4_layout.html.twig' %}

@@ -16,9 +16,8 @@ class ChoiceType extends AbstractType
     {
         $builder
             ->add('visit', DateType::class, array(
-                /*'html5'=>false,
-                'input'=>'string',*/
-                'widget' => 'single_text',))
+                'format'=>'dd/MM/yyyy',                
+                 'widget' => 'single_text',))
             ->add('halfDay')
             ->add('tickets');
     }
