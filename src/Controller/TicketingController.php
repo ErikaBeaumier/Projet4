@@ -23,11 +23,12 @@ class TicketingController extends AbstractController
     /**
      * @Route("/ticketing", name="ticketing")
      */
-    public function index()
+    public function index(Schedule $schedule)
     {
         return $this->render('ticketing/index.html.twig', [
             'controller_name' => 'TicketingController',
             'closed_day' => [0,2],
+            'closeHourTickets'=> $schedule->getClosedHourTickets(),
         ]);
     }
 
@@ -40,6 +41,7 @@ class TicketingController extends AbstractController
                             [
                                 'Opening' => $schedule->opening(),
                                 'Closing' => $schedule->closing(),
+                                'closeHourTickets'=> $schedule->getClosedHourTickets(),
                             ]);
     }
 
@@ -58,7 +60,7 @@ class TicketingController extends AbstractController
     /**
      * @Route("/ticketing", name="ticketing")
      */    
-    public function ChoiceForm(Choice $choice = null, Request $request, ObjectManager $manager)
+    public function ChoiceForm(Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
     {
         
         if(!$choice)
@@ -81,7 +83,7 @@ class TicketingController extends AbstractController
             return $this->redirectToRoute('visitor', ['id' => $choice->getId()]);
         }
 
-        return $this->render('ticketing/index.html.twig', ['formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
+        return $this->render('ticketing/index.html.twig', ['halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
         ]);
     }    
 

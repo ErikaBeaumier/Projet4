@@ -55,6 +55,10 @@ services:
             $closedDay:
                 - 0
                 - 2
+            $closeHourTickets:
+                17
+            $halfTicketsMaxHour:
+                14
     
     App\Service\Prices:
         arguments:

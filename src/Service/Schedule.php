@@ -6,12 +6,16 @@ class Schedule
     public $daysOfWeek;
     public $staticDatesText;
     public $closedDay;
+    public $closeHourTickets;
+    public $halfTicketsMaxHour;
 
-    public function __construct($daysOfWeek, $staticDatesText, $closedDay)
+    public function __construct($daysOfWeek, $staticDatesText, $closedDay,$closeHourTickets,$halfTicketsMaxHour )
     {
         $this->daysOfWeek = $daysOfWeek;
         $this->staticDatesText = $staticDatesText;
         $this->closedDay = $closedDay;
+        $this->closeHourTickets = $closeHourTickets;
+        $this->halfTicketsMaxHour = $halfTicketsMaxHour;
     }
 
     public function opening()
@@ -27,5 +31,15 @@ class Schedule
     public function getClosedDay()
     {
         return $this->closedDay;
+    }
+
+    public function getClosedHourTickets()
+    {
+        return $this->closeHourTickets;
+    }
+
+    public function getHalfTicketsMaxHour()
+    {
+        return $this->halfTicketsMaxHour;
     }
 }
