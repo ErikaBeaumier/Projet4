@@ -1,73 +1,85 @@
 {% extends 'base.html.twig'%}
+
 {% block stylesheets %}
 	<link rel="stylesheet" href="https://unpkg.com/js-datepicker/dist/datepicker.min.css">
 {% endblock %}
+
 {% block javascripts %}
+	
 	<script src="https://unpkg.com/js-datepicker"></script>
+	
 	<script>
 
-	var equal_date = function(date1,date2){
+		//Use for date comparaison
+		var equal_date = function(date1,date2)
+		{
 			if (date1>date2) return false;
-		else if (date1<date2) return false;
-		else return true; 
-  }
+			else if (date1<date2) return false;
+			else return true; 
+		}
+		
+		//Toggle the hald day button after a certain hour
 		function toggleHalfDay(selectedDate)
 		{
-
-
 			let DateNow = new Date();
 			var DateNowWithoutTime = new Date(DateNow.getFullYear(), DateNow.getMonth(), DateNow.getDate());
 
-			if(selectedDate.getTime() == DateNowWithoutTime.getTime() && DateNow.getHours()>={{ halfTicketsMaxHour }})
+			//Ticket are hald day after a certain hour
+			if(selectedDate.getTime() == DateNowWithoutTime.getTime() && DateNow.getHours() >= {{ halfTicketsMaxHour }})
 			{
 				document.getElementById("choice_halfDay").checked = true;
-				document.getElementById("choice_halfDay").setAttribute("disabled", "true");
+				document.getElementById("choice_halfDay").setAttribute("onclick", "return false");
 			}
 			else
 			{
 				document.getElementById("choice_halfDay").checked = false;
-				document.getElementById("choice_halfDay").removeAttribute("disabled");
+				document.getElementById("choice_halfDay").removeAttribute("onclick");
 			}
 
-			//disabled':"true", 'checked':"true"
+			
 		}
 
-		function isOpen(date){
+		//open day in datepicker
+		function isOpen(date)
+		{
 			var day = date.getDay();
 			var closed = [0,2];
 			if(closed.indexOf(day)==-1) return false;
 			return true;
 		}
+		
 		let today = new Date();
 		var year = today.getFullYear();
 		var month = today.getMonth();
 		var day = today.getDate();
 		var nextyear = new Date(year + 1, month, day);
+		//Can't buy tickets after a certain hour
 		if(today.getHours()>={{ closeHourTickets }})
 			today = new Date(year, month, day+1);
 		
 	
-		const picker = datepicker("#choice_visit", {
-		
-		// Disable every Tuesday and sunday on the calendar (for any given month).
-		formatter: (input, date, instance) => {
-				const value = date.toLocaleDateString();
+		const picker = datepicker("#choice_visit",
+		{		
+		// Disable every Tuesday and Sunday on the calendar (for any given month).
+		formatter: (input, date, instance) =>
+		{
+			const value = date.toLocaleDateString();
 			input.value = value;
 		}, 
-		maxDate: nextyear, //dans 1 an
-		minDate: today, //aujourd'hui	
+		
+		maxDate: nextyear,
+		minDate: today,	
 		customDays: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
 		customMonths: ['Jan', 'Fev', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'Sept', 'Oct', 'Nov', 'Dec'],
-		//alwaysShow: true, // Toujours affiché 
 		disabler: date => isOpen(date),
 		onSelect: instance => {
-				// Show which date was selected.
-				//console.log(instance.dateSelected)
+				// On date selected after a certain hour it s impossible to have full day tickets
 				toggleHalfDay(instance.dateSelected);
 			},
 		 })
 	</script>
 {% endblock %}
+
 {% form_theme formChoice 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
@@ -89,7 +101,7 @@
 
 		{{ form_row(formChoice.tickets) }}
 		
-		<button type="submit" class="btn btn-success">Valider</button>
+		<button type="submit" class="btn btn-success" >Valider</button>
 
 		{{ form_end(formChoice) }}
 

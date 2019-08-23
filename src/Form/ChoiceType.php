@@ -17,13 +17,13 @@ class ChoiceType extends AbstractType
     {
         $builder
             ->add('visit', DateType::class, array(
-                'format'=>'dd/MM/yyyy',                
-                 'widget' => 'single_text',))
+                  'format'=>'dd/MM/yyyy',                
+                  'widget' => 'single_text',))
             ->add('halfDay')
             ->add('tickets')
             ->add('visitors', CollectionType::class, [
-                'entry_type' => VisitorType::class,
-                'entry_options' => ['label' => false],
+                  'entry_type' => VisitorType::class,
+                  'entry_options' => ['label' => false],
             ]);
     }
 

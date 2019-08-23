@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Service\Schedule;
 use App\Service\Prices;
 use App\Service\Ages;
+use App\Service\Summary;
 use Ramsey\Uuid\Uuid;
 
 class TicketingController extends AbstractController
@@ -98,29 +99,33 @@ class TicketingController extends AbstractController
         //Get the choice form id
         $currentId = $request->attributes->get('id');
         $currentChoice = new Choice();
-        
+        //Get current choice
+        $repository = $em->getRepository(Choice::class);
+        $currentChoice = $repository->findOneBy(['id' => $currentId]);
         if($currentChoice->getVisitors()->count()==0)
         {
           
-            //Get current choice
-            $repository = $em->getRepository(Choice::class);
-            $currentChoice = $repository->findOneBy(['id' => $currentId]);
+
             //If there is no choice in database linked to the id
             if (!$currentChoice) {
                 throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
             }
             //It's a new choice, we need to create the visitor
-            //getVisitors
-            $visitor = new Visitor();
-            $visitor->setName("Nom");
-            $visitor->setFirstName("Prenom");
-            $visitor->setCountry("Pays");
-            $visitor->setBirthday(New \DateTime());
-            $visitor->setChoiceuuid($currentChoice->getUuid());
-            $choice->addVisitor($visitor);
-            $manager->persist($visitor);
-            $manager->persist($choice);
-            $manager->flush();
+            
+            for ($i = 1; $i <= $currentChoice->getTickets(); $i++) {
+                $visitor = new Visitor();
+                $visitor->setName("Nom");
+                $visitor->setFirstName("Prenom");
+                $visitor->setCountry("Pays");
+                $visitor->setBirthday(New \DateTime());
+                $visitor->setChoiceuuid($currentChoice->getUuid());
+                $choice->addVisitor($visitor);
+                $manager->persist($visitor);
+                $manager->persist($choice);
+                $manager->flush();
+            }
+
+ 
         }      
 
         $form = $this->createForm(ChoiceType::class, $choice);
@@ -135,7 +140,7 @@ class TicketingController extends AbstractController
             return $this->redirectToRoute('summary', ['id' => $currentId]);
         }
 
-
+       
         return $this->render('ticketing/visitor.html.twig', ['currentChoice'=>$currentChoice, 'formVisitor' => $form->createView(), 'editMode' => $currentId !== null
         ]);
     }

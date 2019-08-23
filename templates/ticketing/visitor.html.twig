@@ -4,11 +4,37 @@
 
 {% block body %}
 
-	<h1>Remplissez le(s) formulaire(s)</h1>
+	<h1>Summary</h1>{{ tata.toto }}
 		
 		{{ form_start(formVisitor) }}
-			
-	
+
+		{{ form_row(formVisitor.visit, {'attr':{"readonly":true}}) }}
+		
+		<div>
+			<label class="switch">
+				<span class="slider round"></span>
+			</label>
+		
+			{{ form_row(formVisitor.halfDay, {'attr':{"onclick":"return false", 'label':"switch", 'span class':"slider round"}}) }}
+
+		</div>
+
+		{{ form_row(formVisitor.tickets, {'attr':{"readonly":true}}) }}
+		<hr/>
+		<h1>Please fill a form by visitor</h1>
+		{% for visitor in formVisitor.visitors %}
+           <hr/> 
+		   {{ form_row(visitor.name, {'attr':{"value":""}}) }}</br>
+		   {{ form_row(visitor.firstName, {'attr':{"value":""}}) }}</br>
+		   {{ form_row(visitor.birthday, {'attr':{"value":""}}) }}</br>
+		   {{ form_row(visitor.country, {'attr':{"value":""}}) }}</br>
+		   {{ form_row(visitor.reduc) }}</br>
+        {% endfor %}
+
+		<button type="submit" class="btn btn-success">Valider</button>
+
 		{{ form_end(formVisitor) }}
 
 {% endblock %}
+
+
