@@ -43,6 +43,16 @@ class Visitor
      */
     private $reduc;
 
+    /**
+     * @ORM\Column(type="uuid")
+     */
+    private $choiceuuid;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Choice", inversedBy="Visitors")
+     */
+    private $Visitor;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +114,30 @@ class Visitor
     public function setReduc(?bool $reduc): self
     {
         $this->reduc = $reduc;
+
+        return $this;
+    }
+
+    public function getChoiceuuid()
+    {
+        return $this->choiceuuid;
+    }
+
+    public function setChoiceuuid($choiceuuid): self
+    {
+        $this->choiceuuid = $choiceuuid;
+
+        return $this;
+    }
+
+    public function getVisitor(): ?Choice
+    {
+        return $this->Visitor;
+    }
+
+    public function setVisitor(?Choice $Visitor): self
+    {
+        $this->Visitor = $Visitor;
 
         return $this;
     }

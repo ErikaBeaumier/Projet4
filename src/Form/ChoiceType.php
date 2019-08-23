@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bundle\FrameworkBundle\Form\FormType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class ChoiceType extends AbstractType
 {
@@ -19,7 +20,11 @@ class ChoiceType extends AbstractType
                 'format'=>'dd/MM/yyyy',                
                  'widget' => 'single_text',))
             ->add('halfDay')
-            ->add('tickets');
+            ->add('tickets')
+            ->add('visitors', CollectionType::class, [
+                'entry_type' => VisitorType::class,
+                'entry_options' => ['label' => false],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

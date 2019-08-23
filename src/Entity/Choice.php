@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -39,6 +41,16 @@ class Choice
      * @ORM\Column(type="uuid")
      */
     private $uuid;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Visitor", mappedBy="Visitor")
+     */
+    private $Visitors;
+
+    public function __construct()
+    {
+        $this->Visitors = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -99,5 +111,36 @@ class Choice
         
         $metadata->addPropertyConstraint('uuid', new Assert\Uuid());
     
+    }
+
+    /**
+     * @return Collection|Visitor[]
+     */
+    public function getVisitors(): Collection
+    {
+        return $this->Visitors;
+    }
+
+    public function addVisitor(Visitor $visitor): self
+    {
+        if (!$this->Visitors->contains($visitor)) {
+            $this->Visitors[] = $visitor;
+            $visitor->setVisitor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVisitor(Visitor $visitor): self
+    {
+        if ($this->Visitors->contains($visitor)) {
+            $this->Visitors->removeElement($visitor);
+            // set the owning side to null (unless already changed)
+            if ($visitor->getVisitor() === $this) {
+                $visitor->setVisitor(null);
+            }
+        }
+
+        return $this;
     }
 }

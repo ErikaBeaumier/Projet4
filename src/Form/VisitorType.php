@@ -19,8 +19,7 @@ class VisitorType extends AbstractType
             ->add('birthday', DateType::class, array(
               'widget' => 'single_text',))
             ->add('country')
-            ->add('reduc')
-        ;
+            ->add('reduc');
     }
 
     public function configureOptions(OptionsResolver $resolver)
