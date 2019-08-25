@@ -1,10 +1,15 @@
 {% extends 'base.html.twig'%}
 
+{% block javascripts %}
+<script>
+document.getElementById("btn_resa").style="display:none";
+</script>
+{% endblock %}
 {% form_theme formVisitor 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
 
-	<h1>Summary</h1>{{ tata.toto }}
+	<h1>Summary</h1>
 		
 		{{ form_start(formVisitor) }}
 
@@ -22,14 +27,26 @@
 		{{ form_row(formVisitor.tickets, {'attr':{"readonly":true}}) }}
 		<hr/>
 		<h1>Please fill a form by visitor</h1>
-		{% for visitor in formVisitor.visitors %}
-           <hr/> 
-		   {{ form_row(visitor.name, {'attr':{"value":""}}) }}</br>
-		   {{ form_row(visitor.firstName, {'attr':{"value":""}}) }}</br>
-		   {{ form_row(visitor.birthday, {'attr':{"value":""}}) }}</br>
-		   {{ form_row(visitor.country, {'attr':{"value":""}}) }}</br>
-		   {{ form_row(visitor.reduc) }}</br>
-        {% endfor %}
+		{% if isnew == true %}
+			{% for visitor in formVisitor.visitors %}
+				<hr/> 
+				{{ form_row(visitor.name, {'attr':{"value":""}}) }}</br>
+				{{ form_row(visitor.firstName, {'attr':{"value":""}}) }}</br>
+				{{ form_row(visitor.birthday, {'attr':{"value":""}}) }}</br>
+				{{ form_row(visitor.country, {'attr':{"value":""}}) }}</br>
+				{{ form_row(visitor.reduc) }}</br>
+        	{% endfor %}
+		{% else %}
+			{% for visitor in formVisitor.visitors %}
+				<hr/> 
+				{{ form_row(visitor.name) }}</br>
+				{{ form_row(visitor.firstName) }}</br>
+				{{ form_row(visitor.birthday) }}</br>
+				{{ form_row(visitor.country) }}</br>
+				{{ form_row(visitor.reduc) }}</br>
+        	{% endfor %}
+		{% endif %}
+
 
 		<button type="submit" class="btn btn-success">Valider</button>
 

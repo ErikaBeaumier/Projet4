@@ -1,21 +1,51 @@
 {% extends 'base.html.twig'%}
 
+{% block javascripts %}
+<script>
+document.getElementById("btn_resa").style="display:none";
+</script>
+{% endblock %}
+
 {% block body %}
 
 	<h1>Récapitulatif</h1>
-
 		<section class="visitors">
-			{% for visitor in visitors %}
-				{{ visitor.name }}<br />
-				{{ visitor.firstName }}<br />
-				{{ visitor.birthday | date('d/m/Y')}}<br />
-				{{ visitor.country }}<br />
-				{{ visitor.reduc }}<br />
-			{% endfor %}
+		{{ summary.tickets }}
+		{% if  summary.tickets > 1   %}
+			billets 
+		{% else %}
+			billet
+		{% endif %}
 
-				<a href="{{ path('home') }}"class="btn btn-success">Modifier</a>
-				<a href="{{ path('payment') }}"class="btn btn-success">Valider</a>
 		
+		{% if  summary.halfday   %}
+			 demi-journée<br/>
+		{% else %}
+			 journée<br/>
+		{% endif %}
+		
+
+
+		Prix total : {{ summary.totalPrices }} €<bt/>
+		{% for ticket in summary.ticketcollection %}
+			<hr/> 
+			{{ ticket.name }}</br>
+			{{ ticket.firstName }}</br>
+			{{ ticket.birthday|date('d-m-Y') }}</br>
+			{{ ticket.country }}</br>
+			{% if  ticket.reduc   %}
+				Réduction appliquée<br/>
+			{% else %}
+				Aucune reduction appliquée<br/>
+			{% endif %}
+			{{ ticket.tarifType }}
+			{{ ticket.price }} €</br>
+		{% endfor %}
+		<hr/>
+				<a href="{{ path('edit', {id:summary.id}) }}"class="btn btn-success">Modifier</a>
+				<a href="{{ path('payment') }}"class="btn btn-success">Valider</a>
 		</section>
 
 {% endblock %}
+
+

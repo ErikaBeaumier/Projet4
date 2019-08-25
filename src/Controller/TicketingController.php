@@ -102,6 +102,8 @@ class TicketingController extends AbstractController
         //Get current choice
         $repository = $em->getRepository(Choice::class);
         $currentChoice = $repository->findOneBy(['id' => $currentId]);
+        //test is new : used in twig to display or not data in field
+        $isnew = false;
         if($currentChoice->getVisitors()->count()==0)
         {
           
@@ -111,7 +113,7 @@ class TicketingController extends AbstractController
                 throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
             }
             //It's a new choice, we need to create the visitor
-            
+            $isnew = true;
             for ($i = 1; $i <= $currentChoice->getTickets(); $i++) {
                 $visitor = new Visitor();
                 $visitor->setName("Nom");
@@ -137,22 +139,32 @@ class TicketingController extends AbstractController
             $manager->persist($choice);
             $manager->flush();
 
-            return $this->redirectToRoute('summary', ['id' => $currentId]);
+            return $this->redirect("/ticketing/". $currentId."/summary");
+            //return $this->redirectToRoute('summary', ['id' => $currentId]);
         }
 
        
-        return $this->render('ticketing/visitor.html.twig', ['currentChoice'=>$currentChoice, 'formVisitor' => $form->createView(), 'editMode' => $currentId !== null
+        return $this->render('ticketing/visitor.html.twig', ['isnew'=>$isnew,'currentChoice'=>$currentChoice, 'formVisitor' => $form->createView(), 'editMode' => $currentId !== null
         ]);
     }
 
     /**
     * @Route("/ticketing/summary", name="summary")
+    * * @Route("/ticketing/{id}/summary", name="summaryEdit")
     */
-    public function summary(VisitorRepository $repo)
+    public function summary(Prices $price,Ages $ages,Request $request,EntityManagerInterface $em)
     {
-        $visitors = $repo->findBy(array(), array('id' => 'desc'),1,0);
+        //Get the choice form id
+        $currentId = $request->attributes->get('id');
+        $repository = $em->getRepository(Choice::class);
+        $currentChoice = $repository->findOneBy(['id' => $currentId]);
 
-        return $this->render('ticketing/summary.html.twig', ['visitors' => $visitors]);
+        //TODO Test if no restult
+
+        $summary = new summary();
+        $summary->loadChoice($currentChoice,$price,$ages);
+
+        return $this->render('ticketing/summary.html.twig', ['summary' => $summary]);
     }
 
     /**

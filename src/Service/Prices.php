@@ -37,4 +37,17 @@ class Prices
                 'senior'=>$this->senior * $this->reduc
         ];
     }
+
+    public function getPrice($ticketType, $HalfDays, $reduc)
+    {
+        $table = $this->standard();
+        $price = $table[$ticketType];
+      
+       //var_dump($price);
+        if($HalfDays)
+         $price = $price* $this->reduc;
+        if($reduc)
+         $price = $price* $this->reduc;
+        return $price;
+    }
 }

@@ -9,7 +9,7 @@
 	<script src="https://unpkg.com/js-datepicker"></script>
 	
 	<script>
-
+		document.getElementById("btn_resa").style="display:none";
 		//Use for date comparaison
 		var equal_date = function(date1,date2)
 		{
@@ -100,6 +100,10 @@
 		</div>
 
 		{{ form_row(formChoice.tickets) }}
+
+		<div style="display:none">
+			{{ form_row(formChoice.visitors) }}
+		</div>
 		
 		<button type="submit" class="btn btn-success" >Valider</button>
 
