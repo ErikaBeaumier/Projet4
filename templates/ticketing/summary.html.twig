@@ -19,14 +19,16 @@ document.getElementById("btn_resa").style="display:none";
 
 		
 		{% if  summary.halfday   %}
-			 demi-journée<br/>
+			 demi-journée
 		{% else %}
-			 journée<br/>
+			 journée
 		{% endif %}
+
+		pour le {{ summary.visit|date('d-m-Y') }}
 		
 
 
-		Prix total : {{ summary.totalPrices }} €<bt/>
+		au prix total de : {{ summary.totalPrices }} €<bt/>
 		{% for ticket in summary.ticketcollection %}
 			<hr/> 
 			{{ ticket.name }}</br>

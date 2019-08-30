@@ -9,8 +9,40 @@
 	<script src="https://unpkg.com/js-datepicker"></script>
 	
 	<script>
+		//helper for not working day in france
+		function JoursFeries (an){
+			var JourAn = new Date(an, "00", "01")
+			var FeteTravail = new Date(an, "04", "01")
+			var Victoire1945 = new Date(an, "04", "08")
+			var FeteNationale = new Date(an,"06", "14")
+			var Assomption = new Date(an, "07", "15")
+			var Toussaint = new Date(an, "10", "01")
+			var Armistice = new Date(an, "10", "11")
+			var Noel = new Date(an, "11", "25")
+			//var SaintEtienne = new Date(an, "11", "26") //not a holydays in paris : only in East France
+			
+			var G = an%19
+			var C = Math.floor(an/100)
+			var H = (C - Math.floor(C/4) - Math.floor((8*C+13)/25) + 19*G + 15)%30
+			var I = H - Math.floor(H/28)*(1 - Math.floor(H/28)*Math.floor(29/(H + 1))*Math.floor((21 - G)/11))
+			var J = (an*1 + Math.floor(an/4) + I + 2 - C + Math.floor(C/4))%7
+			var L = I - J
+			var MoisPaques = 3 + Math.floor((L + 40)/44)
+			var JourPaques = L + 28 - 31*Math.floor(MoisPaques/4)
+			var Paques = new Date(an, MoisPaques-1, JourPaques)
+			//var VendrediSaint = new Date(an, MoisPaques-1, JourPaques-2) // not a holydays in paris : only in East France
+			var LundiPaques = new Date(an, MoisPaques-1, JourPaques+1)
+			var Ascension = new Date(an, MoisPaques-1, JourPaques+39)
+			var Pentecote = new Date(an, MoisPaques-1, JourPaques+49)
+			var LundiPentecote = new Date(an, MoisPaques-1, JourPaques+50)
+			
+			return new Array(JourAn, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel)
+		}
+		
+	
+		//disable button
 		document.getElementById("btn_resa").style="display:none";
-		//Use for date comparaison
+		// Use for date comparaison
 		var equal_date = function(date1,date2)
 		{
 			if (date1>date2) return false;
@@ -18,13 +50,13 @@
 			else return true; 
 		}
 		
-		//Toggle the hald day button after a certain hour
+		// Toggle the hald day button after a certain hour
 		function toggleHalfDay(selectedDate)
 		{
 			let DateNow = new Date();
 			var DateNowWithoutTime = new Date(DateNow.getFullYear(), DateNow.getMonth(), DateNow.getDate());
 
-			//Ticket are hald day after a certain hour
+			// Ticket are hald day after a certain hour
 			if(selectedDate.getTime() == DateNowWithoutTime.getTime() && DateNow.getHours() >= {{ halfTicketsMaxHour }})
 			{
 				document.getElementById("choice_halfDay").checked = true;
@@ -42,9 +74,30 @@
 		//open day in datepicker
 		function isOpen(date)
 		{
+			//2 days closed
 			var day = date.getDay();
 			var closed = [0,2];
-			if(closed.indexOf(day)==-1) return false;
+	
+			//prepare for not working days 
+			var found = false;
+			//Liste of workding days : Calculate it for the current year
+			var list = JoursFeries(new Date().getFullYear());
+
+			//compare day and month
+			list.forEach((item) => {
+				if(item.getDate() == date.getDate() && item.getMonth() == date.getMonth() )
+					found = true;
+			})
+			
+			//if date if found in not working day don't display the date
+			if(found == true)
+				return true;
+			
+			//if the days is not one of the closed one
+			if(closed.indexOf(day)==-1) 
+				return false;
+
+			//the day is one of the closed one
 			return true;
 		}
 		
@@ -60,16 +113,18 @@
 	
 		const picker = datepicker("#choice_visit",
 		{		
-		// Disable every Tuesday and Sunday on the calendar (for any given month).
+	
 		formatter: (input, date, instance) =>
 		{
 			const value = date.toLocaleDateString();
 			input.value = value;
 		}, 
 		
+		// Custom Datepicker
 		maxDate: nextyear,
 		minDate: today,	
 		customDays: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+		startDay : 1,
 		customMonths: ['Jan', 'Fev', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'Sept', 'Oct', 'Nov', 'Dec'],
 		disabler: date => isOpen(date),
 		onSelect: instance => {

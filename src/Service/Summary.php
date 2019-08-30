@@ -9,34 +9,6 @@ use App\Service\Ages;
 class Summary
 {
 
-    /*
-        TODO
-
-        Chargé le résumé à partir du choice
-        v- Constructeur : 
-            v- Via service prices charger les prix + 
-            v- via param le choice pour initialiser
-        v- Variable privé pour les infos du choice 
-            v- faire aussi les getter/setter
-        v- Tableau de ticket pour les ticket avec prix
-            v-Faire l'objet ticket avec infos de prix
-           v-constructure d'un ticket
-                v- Charger les prix depuis le service
-                v- Prendre en paramétre
-                v-faire les accesseurs (dont le prix)
-                - Appliqué les prix des billets par tickets (et pouvoir les afficher via twig)
-        v- Fin du chargement des tickets
-            v- Stocker le total dans une variable pour affichage via le twig et stockage en bdd
-        -Affichage
-            -Twig 
-        - Après validation
-            - Avant envoie vers payement : faire une table de trace des paiment avec ID du choice, montant, statut paiment
-        - Apres validation paiement
-            - Mettre a jour le statut de paiement
-            - Envoyer le mail
-    */
-
-
     //Id of the choice
     private $id;
     //DateTime of the visit

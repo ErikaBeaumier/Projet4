@@ -87,7 +87,7 @@ class Choice
         return $this->tickets;
     }
 
-    public function setTickets(int $tickets): self
+    public function setTickets(?int $tickets): self
     {
         $this->tickets = $tickets;
 

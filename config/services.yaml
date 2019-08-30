@@ -82,5 +82,5 @@ services:
             $adultAge:
                 - 60
             $seniorAge:
-                - 100
+                - 130
     

@@ -19,6 +19,7 @@ use App\Service\Prices;
 use App\Service\Ages;
 use App\Service\Summary;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class TicketingController extends AbstractController
 {
@@ -62,7 +63,7 @@ class TicketingController extends AbstractController
     /**
      * @Route("/ticketing", name="ticketing")
      */    
-    public function ChoiceForm(Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
+    public function ChoiceForm(SessionInterface $session, Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
     {
         
         if(!$choice)
@@ -79,9 +80,10 @@ class TicketingController extends AbstractController
        
         if($form->isSubmitted() && $form->isValid())
         {
+            
             $manager->persist($choice);
             $manager->flush();
-
+            $session->set('currentChoiceID', $choice->getId());
             //return $this->redirectToRoute('visitor', ['id' => $choice->getId()]);
             return $this->redirect("/ticketing/". $choice->getId()."/edit");
         }
@@ -90,30 +92,47 @@ class TicketingController extends AbstractController
         ]);
     }    
 
+     /**
+     * @Route("/ErrorTickkets", name="ErrorTickkets")
+     */    
+    public function ErrorTickketsForm()
+    {
+        return $this->render("ticketing/errorTicket.html.twig");
+    }
+
     /**
     * @Route("/ticketing/form", name="visitor")
     * @Route("/ticketing/{id}/edit", name="edit")
     */
-    public function visitorForm(Choice $choice = null, Request $request, ObjectManager $manager,EntityManagerInterface $em)
+    public function visitorForm(SessionInterface $session,Choice $choice = null, Request $request, ObjectManager $manager,EntityManagerInterface $em)
     {
         //Get the choice form id
         $currentId = $request->attributes->get('id');
+        //Test if user can read the item
+        $sessionChoiceId = $session->get('currentChoiceID');    
+        if($sessionChoiceId != $currentId)
+        {
+           return $this->redirect("/ErrorTickkets");
+        }
         $currentChoice = new Choice();
+       
         //Get current choice
         $repository = $em->getRepository(Choice::class);
         $currentChoice = $repository->findOneBy(['id' => $currentId]);
+        //If there is no choice in database linked to the id
+        if (!$currentChoice) {
+            throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
+        }
+        $currentNumnerOfTickets = $currentChoice->getTickets();
         //test is new : used in twig to display or not data in field
         $isnew = false;
         if($currentChoice->getVisitors()->count()==0)
         {
-          
 
-            //If there is no choice in database linked to the id
-            if (!$currentChoice) {
-                throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
-            }
             //It's a new choice, we need to create the visitor
             $isnew = true;
+
+            //create the fields for the numbers of tickets
             for ($i = 1; $i <= $currentChoice->getTickets(); $i++) {
                 $visitor = new Visitor();
                 $visitor->setName("Nom");
@@ -136,6 +155,9 @@ class TicketingController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            //Because field is disable for display, we get
+          
+            $choice->setTickets($currentNumnerOfTickets);
             $manager->persist($choice);
             $manager->flush();
 
@@ -152,14 +174,25 @@ class TicketingController extends AbstractController
     * @Route("/ticketing/summary", name="summary")
     * * @Route("/ticketing/{id}/summary", name="summaryEdit")
     */
-    public function summary(Prices $price,Ages $ages,Request $request,EntityManagerInterface $em)
+    public function summary(SessionInterface $session,Prices $price,Ages $ages,Request $request,EntityManagerInterface $em)
     {
         //Get the choice form id
         $currentId = $request->attributes->get('id');
+
+        //Test if user can read the item
+        $sessionChoiceId = $session->get('currentChoiceID');    
+        if($sessionChoiceId != $currentId)
+        {
+           return $this->redirect("/ErrorTickkets");
+        }
+
         $repository = $em->getRepository(Choice::class);
         $currentChoice = $repository->findOneBy(['id' => $currentId]);
 
-        //TODO Test if no restult
+        //If there is no choice in database linked to the id
+        if (!$currentChoice) {
+            throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
+        }
 
         $summary = new summary();
         $summary->loadChoice($currentChoice,$price,$ages);

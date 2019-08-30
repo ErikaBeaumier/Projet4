@@ -1,18 +1,25 @@
 {% extends 'base.html.twig'%}
 
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://unpkg.com/js-datepicker/dist/datepicker.min.css">
+{% endblock %}
+
 {% block javascripts %}
+<script src="https://unpkg.com/js-datepicker"></script>
 <script>
 document.getElementById("btn_resa").style="display:none";
 </script>
 {% endblock %}
 {% form_theme formVisitor 'bootstrap_4_layout.html.twig' %}
 
+
 {% block body %}
 
-	<h1>Summary</h1>
-		
+	
 		{{ form_start(formVisitor) }}
 
+		<h1>Votre selection</h1>
+		<section class="visitors">
 		{{ form_row(formVisitor.visit, {'attr':{"readonly":true}}) }}
 		
 		<div>
@@ -24,9 +31,12 @@ document.getElementById("btn_resa").style="display:none";
 
 		</div>
 
-		{{ form_row(formVisitor.tickets, {'attr':{"readonly":true}}) }}
+		{{ form_row(formVisitor.tickets, {'attr':{"disabled":"true"}}) }}
+
+		pour le {{ currentChoice.visit|date('d-m-Y') }}
+
 		<hr/>
-		<h1>Please fill a form by visitor</h1>
+		<h1>Merci de renseigner les informations suivantes</h1>
 		{% if isnew == true %}
 			{% for visitor in formVisitor.visitors %}
 				<hr/> 
@@ -48,7 +58,8 @@ document.getElementById("btn_resa").style="display:none";
 		{% endif %}
 
 
-		<button type="submit" class="btn btn-success">Valider</button>
+		<button type="button" class="btn btn-success" onclick="location.href='/ticketing/'">Modifier</button>
+		<button type="submit" class="btn btn-success" >Valider</button>
 
 		{{ form_end(formVisitor) }}
 
