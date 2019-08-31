@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Votre commande à la Billetterie du Louvre{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/lux/bootstrap.min.css">
+		<link rel="stylesheet" href="https://unpkg.com/js-datepicker/dist/datepicker.min.css">
+        {% block stylesheets %}{% endblock %}
+    </head>
+    
+    <body>
+
+        
+        <div class="container">
+            {% block header %}
+
+            {% endblock %}
+        </div>
+
+        <br /><div class="container">
+        	{% block body %}   		
+        	{% endblock %}
+        </div>
+        
+        <div class="container">
+        	{% block footer %}
+
+        	{% endblock %}
+        </div>
+        
+        {% block javascripts %}
+
+		{% endblock %}
+    </body>
+</html>

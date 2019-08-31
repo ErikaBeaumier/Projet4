@@ -1,34 +1,61 @@
 {% extends 'base.html.twig'%}
 
+
+
+{% block javascripts %}
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.getElementById("btn_resa").style="display:none";
+</script>
+{% endblock %}
+
 {% block body %}
 
-	<h1>Entrez vos informations de paiement</h1>
+	<h1>Status de votre commande</h1>
 	
 	<script src="https://js.stripe.com/v3/"></script>
 
 		<form action="/charge" method="post" id="payment-form">
 		<div class="form-row">
-			<label for="card-element">
-			Credit or debit card
-			</label>
 			<div id="card-element">
 			<!-- A Stripe Element will be inserted here. -->
+			{% if  checkoutType == "ToPay"   %}
+			<script>
+				var stripe = Stripe('pk_test_jCUaAPI3jLdE5o0EkhICJTOU00CrFDNbIH');
+				stripe.redirectToCheckout({
+				// Make the id field from the Checkout Session creation API response
+				// available to this file, so you can provide it as parameter here
+				// instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+				sessionId: '{{CHECKOUT_SESSION_ID}}'
+				}).then(function (result) {
+				// If `redirectToCheckout` fails due to a browser or network
+				// error, display the localized error message to your customer
+				// using `result.error.message`.
+				});
+			</script>
+			{% endif %}
+
+		 	{% if  checkoutType == "success"   %}
+				<br/>Payement réussi et facture envoyé
+			{% endif %}
+
+			{% if  checkoutType == "NotPayed"   %}
+				<br/>Cette commande n'est pas encore payé, contacter l'administrateur du site
+			{% endif %}
 			</div>
 
 			<!-- Used to display form errors. -->
-			<div id="card-errors" role="alert"></div>
+			<div id="card-errors" role="alert">
+			
+			{% if  checkoutType == "cancel"   %}
+			<br/>Payement annulé par l'utilisateur
+			{% endif %}
+			</div>
 		</div>
 
-		<button>Submit Payment</button>
+		
 		</form>
 
 {% endblock %}
 
-{% block javascripts %}
-
-	<script>
-		var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
-		var elements = stripe.elements();
-	</script>
-
-{% endblock %}

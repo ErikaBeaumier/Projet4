@@ -47,6 +47,11 @@ class Choice
      */
     private $Visitors;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $stripeid;
+
     public function __construct()
     {
         $this->Visitors = new ArrayCollection();
@@ -140,6 +145,18 @@ class Choice
                 $visitor->setVisitor(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStripeid(): ?string
+    {
+        return $this->stripeid;
+    }
+
+    public function setStripeid(?string $stripeid): self
+    {
+        $this->stripeid = $stripeid;
 
         return $this;
     }

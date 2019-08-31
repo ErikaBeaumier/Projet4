@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Choice;
 use App\Repository\ChoiceRepository;
@@ -201,10 +202,160 @@ class TicketingController extends AbstractController
     }
 
     /**
-    * @Route("/ticketing/payment", name="payment")
+    * @Route("/ticketing/payment", name="paymentempty")
+    * @Route("/ticketing/{id}/payment", name="payment")
+    * @Route("/ticketing/{id}/{result}/payment", name="paymentresult")
+    * @Route("/ticketing/{id}/{result}/payment/{sessionid}", name="paymentsuccess")
     */
-    public function payment()
+    public function payment(SessionInterface $session,EntityManagerInterface $em,Request $request,\Swift_Mailer $mailer,UrlGeneratorInterface $router,Prices $price,Ages $ages)
     {
-        return $this->render('ticketing/payment.html.twig');
+        //Get the choice form id
+        $currentId = $request->attributes->get('id');
+        //get the checkout type
+        $checkoutType = $request->attributes->get('result');
+
+        //test if is empty and need to pay
+        if(!isset($checkoutType) )
+        {
+            $checkoutType = "ToPay";
+        }
+
+        if(empty ($checkoutType))
+        {
+            $checkoutType = "ToPay";
+        }
+
+        //Test if user can read the item
+        $sessionChoiceId = $session->get('currentChoiceID');    
+        if($sessionChoiceId != $currentId)
+        {
+            return $this->redirect("/ErrorTickkets");
+        }
+        //get the choice
+        $repository = $em->getRepository(Choice::class);
+        $currentChoice = $repository->findOneBy(['id' => $currentId]);
+
+        //If there is no choice in database linked to the id
+        if (!$currentChoice) {
+            throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
+        }
+
+      //case user need to pay
+      if($checkoutType == "ToPay")
+      {
+
+        //create description of the invoice
+        $description = "".$currentChoice->getTickets();
+        if($currentChoice->getTickets()>1)
+            $description.=" billets ";
+        else
+            $description.=" billet ";
+
+        if($currentChoice->getHalfDay())
+            $description.="demi-journée ";
+        else
+            $description.=" journée ";
+
+        $summary = new summary();
+        $summary->loadChoice($currentChoice,$price,$ages);
+        //create return url for stripe
+        $urlresultsucces =  $router->generate('paymentresult' , ['id' => $sessionChoiceId,'result' => 'success'],UrlGeneratorInterface::ABSOLUTE_URL); 
+        $urlresultcancel =  $router->generate('paymentresult' , ['id' => $sessionChoiceId,'result' => 'cancel'],UrlGeneratorInterface::ABSOLUTE_URL);
+    
+
+        //init stripe
+        \Stripe\Stripe::setApiKey('sk_test_ASRZDPsMNfDcCqJbjLd0A4IS00E6ftdDs6');
+        //Create checkout
+        $sessionStripe = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+              'name' => 'Réservation visite du louvre',
+              'description' => $description,
+              'images' => ['https://tourscanner.co/blog/wp-content/uploads/2018/09/Louvre-museum-tickets.jpg'],
+              'amount' => $summary->gettotalPrices()*100,
+              'currency' => 'eur',
+              'quantity' => 1,
+             
+            ]],
+            'success_url' =>  $urlresultsucces,
+            'cancel_url' => $urlresultcancel,
+            "client_reference_id" => $currentChoice->getUuid(),
+          ]);
+
+          //update the choice with the user id
+          $currentChoice->setStripeid($sessionStripe->id);
+          $em->persist($currentChoice);
+          $em->flush();
+          
+          return $this->render('ticketing/payment.html.twig' , ['CHECKOUT_SESSION_ID' => $sessionStripe->id,'checkoutType'=> $checkoutType]);
+       }
+
+       //case paiement success
+       if($checkoutType == "success")
+       {
+            //init stripe
+        \Stripe\Stripe::setApiKey('sk_test_ASRZDPsMNfDcCqJbjLd0A4IS00E6ftdDs6');
+        //get the session id for the choice
+        $userSessionID = $currentChoice->getStripeid();
+        $sessionStripe =\Stripe\Checkout\Session::retrieve($userSessionID);
+        $UserMail="";
+        if(isset($sessionStripe) && !empty($sessionStripe))
+        {
+            //get the payment intention
+            $payment_intent_id =  $sessionStripe->payment_intent;
+            $payment_intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
+            //get the payment status
+            $payementStatus = $payment_intent->status;
+            if($payementStatus == "succeeded")
+            {
+                //get the customer
+                $customerid = $payment_intent->customer;
+                $customer = \Stripe\Customer::retrieve($customerid);
+                //get the customer mail
+                $UserMail =  $customer->email;
+                //prepare for content mail
+                $summary = new summary();
+                $summary->loadChoice($currentChoice,$price,$ages);
+                //send email
+                $message = (new \Swift_Message('Billeterie du Louvre'))
+                ->setFrom('billetries@projet4OpenClassRoom.com')
+                ->setTo($UserMail)
+                ->setBody(
+                    $this->renderView(
+                        'emails/receipt.html.twig',
+                        ['summary' => $summary]
+                    ),
+                    'text/html'
+                )
+                ;
+                
+
+                $resultMail = $mailer->send($message,$failures);
+                //Uncomment to test mail render
+               // return $this->render('emails/receipt.html.twig',['summary' => $summary]);
+                //render page result
+                return $this->render('ticketing/payment.html.twig' , ['resultMail'=>$resultMail,'checkoutType'=> $checkoutType,'usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
+            }
+            else
+            {
+                //payement not payed
+                return $this->render('ticketing/payment.html.twig' , ['checkoutType'=> 'NotPayed','usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
+            }
+        }
+        else
+        {
+            //case payment not already payed 
+            return $this->render('ticketing/payment.html.twig' , ['checkoutType'=> 'NotPayed','usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
+        }
+          
+       }
+
+       //case paiment aborted
+       if($checkoutType == "cancel")
+       {
+          return $this->render('ticketing/payment.html.twig' , ['checkoutType'=> $checkoutType]);  
+       }
     }
+
+    
 }

@@ -45,7 +45,7 @@ document.getElementById("btn_resa").style="display:none";
 		{% endfor %}
 		<hr/>
 				<a href="{{ path('edit', {id:summary.id}) }}"class="btn btn-success">Modifier</a>
-				<a href="{{ path('payment') }}"class="btn btn-success">Valider</a>
+				<a href="/ticketing/{{summary.id}}/payment"class="btn btn-success">Valider</a>
 		</section>
 
 {% endblock %}

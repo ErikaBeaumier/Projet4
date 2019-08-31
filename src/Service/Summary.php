@@ -39,6 +39,7 @@ class Summary
         $this->visit = $choice->getVisit();
         $this->halfDay = $choice->getHalfDay();
         $this->tickets = $choice->getTickets();
+        $this->uuid =  $choice->getUuid();
         //init the collection of tickets
         $this->ticketcollection =  [];
         //get visitors list from choice

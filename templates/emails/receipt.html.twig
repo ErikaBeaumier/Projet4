@@ -1,0 +1,42 @@
+{% extends 'email.html.twig'%}
+
+{% block body %}
+  <p><img src="https://www.louvre.fr/sites/all/themes/louvre/img/data/logo-louvre.jpg" alt="logo du louvre" /></p>
+<h1>Résumé de votre commande</h1>
+  
+	<section class="visitors">
+		{{ summary.tickets }}
+		{% if  summary.tickets > 1   %}
+			billets 
+		{% else %}
+			billet
+		{% endif %}
+
+		
+		{% if  summary.halfday   %}
+			 demi-journée
+		{% else %}
+			 journée
+		{% endif %}
+
+		pour le {{ summary.visit|date('d-m-Y') }}
+		
+
+
+		au prix total de : {{ summary.totalPrices }} €<br/>
+        Votre identifiant de commande : {{ summary.Uuid }} <br/>
+		{% for ticket in summary.ticketcollection %}
+			<hr/> 
+			{{ ticket.name }}</br>
+			{{ ticket.firstName }}</br>
+			{{ ticket.birthday|date('d-m-Y') }}</br>
+			{{ ticket.country }}</br>
+			{% if  ticket.reduc   %}
+				Réduction appliquée<br/>
+			{% else %}
+				Aucune reduction appliquée<br/>
+			{% endif %}
+			{{ ticket.tarifType }}
+			{{ ticket.price }} €</br>
+		{% endfor %}
+{% endblock %}
