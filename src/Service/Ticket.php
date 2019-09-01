@@ -65,20 +65,20 @@ class Ticket
         }
     }
 
-private function age($date) {
-   $birthYear = intval($date->format('Y'));
-   $birthMonth = intval($date->format('m'));
-   $now = new \DateTime();;
-   $nowYear = intval($now->format('Y'));
-   $nowmonth = intval($now->format('m'));
-   
-   $ageCalculated = $nowYear - $birthYear;
+    private function age($date) {
+        $birthYear = intval($date->format('Y'));
+        $birthMonth = intval($date->format('m'));
+        $now = new \DateTime();;
+        $nowYear = intval($now->format('Y'));
+        $nowmonth = intval($now->format('m'));
+        
+        $ageCalculated = $nowYear - $birthYear;
 
-   if($nowmonth < $birthMonth)
-    return $ageCalculated-1;
-   else
-    return $ageCalculated;
-}   
+        if($nowmonth < $birthMonth)
+            return $ageCalculated-1;
+        else
+            return $ageCalculated;
+    }   
 
     //accessor
 

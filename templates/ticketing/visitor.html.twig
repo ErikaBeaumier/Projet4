@@ -7,7 +7,7 @@
 {% block javascripts %}
 <script src="https://unpkg.com/js-datepicker"></script>
 <script>
-document.getElementById("btn_resa").style="display:none";
+//document.getElementById("btn_resa").style="display:none";
 </script>
 {% endblock %}
 {% form_theme formVisitor 'bootstrap_4_layout.html.twig' %}
@@ -33,8 +33,11 @@ document.getElementById("btn_resa").style="display:none";
 
 		{{ form_row(formVisitor.tickets, {'attr':{"disabled":"true"}}) }}
 
-		pour le {{ currentChoice.visit|date('d-m-Y') }}
-
+		
+		{% if AdultPresent == false %}
+			<div style="color:red">Les enfants doivent être accompagnés d'un adulte</div>
+			<script>document.getElementById("choice_tickets").value="{{NumberOfTickets}}";</script>
+		{% endif %}
 		<hr/>
 		<h1>Merci de renseigner les informations suivantes</h1>
 		{% if isnew == true %}
@@ -62,7 +65,7 @@ document.getElementById("btn_resa").style="display:none";
 		<button type="submit" class="btn btn-success" >Valider</button>
 
 		{{ form_end(formVisitor) }}
-
+<div style="height:100px">&nbsp;</div>
 {% endblock %}
 
 

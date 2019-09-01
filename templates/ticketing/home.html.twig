@@ -1,7 +1,10 @@
 {% extends 'base.html.twig'%}
 
 {% block body %}
-
+<p>
+	<h1>Bienvenue sur la <a href="{{ path('ticketing') }}">billetterie</a> du Musée du Louvre</h1>
+	<a href="{{ path('ticketing') }}" class="btn btn-primary" id="btn_resa">Réservation</a>
+</p>
 <h2>Information importante</h2>
 
 	<p>En vue de la forte affluence attendue, la réservation en ligne de votre créneau horaire, qui peut seule vous garantir l’entrée au musée, est fortement recommandée.</p>
@@ -27,7 +30,7 @@
 
 	<p>
 		Quels sont les meilleurs horaires pour visiter ?<br />
-		Le matin dès l'ouverture du musée.
+		->Le matin dès l'ouverture du musée.
 	</p>
 
 {% endblock %}

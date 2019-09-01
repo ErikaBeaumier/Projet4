@@ -6,7 +6,7 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-document.getElementById("btn_resa").style="display:none";
+//document.getElementById("btn_resa").style="display:none";
 </script>
 {% endblock %}
 
@@ -37,11 +37,54 @@ document.getElementById("btn_resa").style="display:none";
 			{% endif %}
 
 		 	{% if  checkoutType == "success"   %}
-				<br/>Payement réussi et facture envoyé
+				<br/>Paiement réussi et facture envoyée avec vos billets. Merci de la présenter à l'entrée du musée.
+				<br/>
+				<br/><a href="{{ path('home') }}" class="btn btn-success">retour à l'accueil</a>
+				<br/>
+				<br/>
+					
+					<h1>Résumé de votre commande</h1>
+				<p><img src="https://www.louvre.fr/sites/all/themes/louvre/img/data/logo-louvre.jpg" alt="logo du louvre" /></p>	
+						<section class="visitors">
+							{{ summary.tickets }}
+							{% if  summary.tickets > 1   %}
+								billets 
+							{% else %}
+								billet
+							{% endif %}
+
+							
+							{% if  summary.halfday   %}
+								demi-journée
+							{% else %}
+								journée
+							{% endif %}
+
+							pour le {{ summary.visit|date('d-m-Y') }}
+							
+
+
+							au prix total de : {{ summary.totalPrices }} €<br/>
+							Votre identifiant de commande : {{ summary.Uuid }} <br/>
+							{% for ticket in summary.ticketcollection %}
+								<hr/> 
+								{{ ticket.name }}</br>
+								{{ ticket.firstName }}</br>
+								{{ ticket.birthday|date('d-m-Y') }}</br>
+								{{ ticket.country }}</br>
+								{% if  ticket.reduc   %}
+									Réduction appliquée<br/>
+								{% else %}
+									Aucune reduction appliquée<br/>
+								{% endif %}
+								{{ ticket.tarifType }}
+								{{ ticket.price }} €</br>
+							{% endfor %}				
 			{% endif %}
 
 			{% if  checkoutType == "NotPayed"   %}
-				<br/>Cette commande n'est pas encore payé, contacter l'administrateur du site
+				<br/>Cette commande n'est pas encore payé, procéder au paiement : <a href="/ticketing/{{summary.id}}/payment"class="btn btn-success">Payer</a>
+				<br/>Ou modifier la commande : <a href="{{ path('edit', {id:summary.id}) }}"class="btn btn-success">Modifier</a>
 			{% endif %}
 			</div>
 
@@ -49,13 +92,14 @@ document.getElementById("btn_resa").style="display:none";
 			<div id="card-errors" role="alert">
 			
 			{% if  checkoutType == "cancel"   %}
-			<br/>Payement annulé par l'utilisateur
+			<br/>Payement annulé par l'utilisateur. Procéder à nouveau au paiement : <a href="/ticketing/{{summary.id}}/payment"class="btn btn-success">Payer</a> 
+			<br/>Ou modifier la commande : <a href="{{ path('edit', {id:summary.id}) }}"class="btn btn-success">Modifier</a>
 			{% endif %}
 			</div>
 		</div>
 
 		
 		</form>
-
+<div style="height:100px">&nbsp;</div>
 {% endblock %}
 

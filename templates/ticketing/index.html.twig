@@ -41,7 +41,7 @@
 		
 	
 		//disable button
-		document.getElementById("btn_resa").style="display:none";
+		//document.getElementById("btn_resa").style="display:none";
 		// Use for date comparaison
 		var equal_date = function(date1,date2)
 		{
@@ -82,6 +82,22 @@
 			var found = false;
 			//Liste of workding days : Calculate it for the current year
 			var list = JoursFeries(new Date().getFullYear());
+
+			//Prepare sold out days
+			var soldOutsDays = [];
+			{% for dateSolddout in datesSoldOut %}
+				var parts ='{{dateSolddout}}'.split('-');
+				// Please pay attention to the month (parts[1]); JavaScript counts months from 0:
+				// January - 0, February - 1, etc.
+				var mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
+				soldOutsDays.push(mydate);
+			{% endfor %}
+
+			//compare day and month
+			soldOutsDays.forEach((item) => {
+				if(item.getDate() == date.getDate() && item.getMonth() == date.getMonth() )
+					found = true;
+			})
 
 			//compare day and month
 			list.forEach((item) => {
@@ -163,5 +179,5 @@
 		<button type="submit" class="btn btn-success" >Valider</button>
 
 		{{ form_end(formChoice) }}
-
+<div style="height:100px">&nbsp;</div>
 {% endblock %}

@@ -64,18 +64,19 @@ class TicketingController extends AbstractController
     /**
      * @Route("/ticketing", name="ticketing")
      */    
-    public function ChoiceForm(SessionInterface $session, Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
+    public function ChoiceForm(SessionInterface $session,EntityManagerInterface $em, Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
     {
-        
+        //init du formulaire
         if(!$choice)
         {
             $choice = new Choice();
         }            
-      
+        //create forms
         $form = $this->createForm(ChoiceType::class, $choice);
        
         $form->handleRequest($request);
    
+        //create futur uuuid
         $choice->setUuid(Uuid::uuid4());
 
        
@@ -88,8 +89,23 @@ class TicketingController extends AbstractController
             //return $this->redirectToRoute('visitor', ['id' => $choice->getId()]);
             return $this->redirect("/ticketing/". $choice->getId()."/edit");
         }
+        
+        //prepare to filter date when more than 1 000 tickets
+        //SQL : SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where visit > DATE_SUB(curdate(), INTERVAL 2 DAY) group by `visit` HAVING SUM(tickets) >= 1000
+        $rawSql = " SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where visit > DATE_SUB(curdate(), INTERVAL 2 DAY) group by `visit` HAVING SUM(tickets) >= 1000";
 
-        return $this->render('ticketing/index.html.twig', ['halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
+        $stmt = $em->getConnection()->prepare($rawSql);
+        $stmt->execute([]);
+    
+        $result = $stmt->fetchAll();
+        $datesSoldOut = array();
+        
+        //Create a array of sold out date
+        foreach ( $result as $visit){
+            array_push($datesSoldOut,$visit["visit"]);
+        }
+       
+        return $this->render('ticketing/index.html.twig', ['datesSoldOut'=>$datesSoldOut,'halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
         ]);
     }    
 
@@ -105,7 +121,7 @@ class TicketingController extends AbstractController
     * @Route("/ticketing/form", name="visitor")
     * @Route("/ticketing/{id}/edit", name="edit")
     */
-    public function visitorForm(SessionInterface $session,Choice $choice = null, Request $request, ObjectManager $manager,EntityManagerInterface $em)
+    public function visitorForm(SessionInterface $session,Choice $choice = null, Request $request, ObjectManager $manager,Prices $price,Ages $ages,EntityManagerInterface $em)
     {
         //Get the choice form id
         $currentId = $request->attributes->get('id');
@@ -153,21 +169,34 @@ class TicketingController extends AbstractController
         $form = $this->createForm(ChoiceType::class, $choice);
 
         $form->handleRequest($request);
-
+        //if there is no adult (baby only, refuse the validation)
+        $AdultPresent = true;
         if($form->isSubmitted() && $form->isValid())
         {
             //Because field is disable for display, we get
-          
             $choice->setTickets($currentNumnerOfTickets);
             $manager->persist($choice);
             $manager->flush();
 
-            return $this->redirect("/ticketing/". $currentId."/summary");
+
+            $summary = new summary();
+            $summary->loadChoice($currentChoice,$price,$ages);
+            //if there is no adult (baby only, refuse the validation)
+            $AdultPresent = false;
+            foreach ($summary->getTicketcollection() as $ticket){
+                if($ticket->getTarifType() == "adult" || $ticket->getTarifType() == "senior")
+                 $AdultPresent = true;
+            }
+            if($AdultPresent)
+                 return $this->redirect("/ticketing/". $currentId."/summary");
+            else
+                 return $this->render('ticketing/visitor.html.twig', ['isnew'=>$isnew,'AdultPresent'=> $AdultPresent, 'NumberOfTickets'=>$currentNumnerOfTickets, 'currentChoice'=>$currentChoice, 'formVisitor' => $form->createView(), 'editMode' => $currentId !== null]);
+            
             //return $this->redirectToRoute('summary', ['id' => $currentId]);
         }
 
        
-        return $this->render('ticketing/visitor.html.twig', ['isnew'=>$isnew,'currentChoice'=>$currentChoice, 'formVisitor' => $form->createView(), 'editMode' => $currentId !== null
+        return $this->render('ticketing/visitor.html.twig', ['isnew'=>$isnew,'AdultPresent'=> $AdultPresent,'currentChoice'=>$currentChoice, 'formVisitor' => $form->createView(), 'editMode' => $currentId !== null
         ]);
     }
 
@@ -235,6 +264,9 @@ class TicketingController extends AbstractController
         $repository = $em->getRepository(Choice::class);
         $currentChoice = $repository->findOneBy(['id' => $currentId]);
 
+        $summary = new summary();
+        $summary->loadChoice($currentChoice,$price,$ages);
+
         //If there is no choice in database linked to the id
         if (!$currentChoice) {
             throw $this->createNotFoundException(sprintf('No Tickets for id "%s"', $currentId));
@@ -256,8 +288,7 @@ class TicketingController extends AbstractController
         else
             $description.=" journée ";
 
-        $summary = new summary();
-        $summary->loadChoice($currentChoice,$price,$ages);
+
         //create return url for stripe
         $urlresultsucces =  $router->generate('paymentresult' , ['id' => $sessionChoiceId,'result' => 'success'],UrlGeneratorInterface::ABSOLUTE_URL); 
         $urlresultcancel =  $router->generate('paymentresult' , ['id' => $sessionChoiceId,'result' => 'cancel'],UrlGeneratorInterface::ABSOLUTE_URL);
@@ -313,9 +344,6 @@ class TicketingController extends AbstractController
                 $customer = \Stripe\Customer::retrieve($customerid);
                 //get the customer mail
                 $UserMail =  $customer->email;
-                //prepare for content mail
-                $summary = new summary();
-                $summary->loadChoice($currentChoice,$price,$ages);
                 //send email
                 $message = (new \Swift_Message('Billeterie du Louvre'))
                 ->setFrom('billetries@projet4OpenClassRoom.com')
@@ -334,18 +362,18 @@ class TicketingController extends AbstractController
                 //Uncomment to test mail render
                // return $this->render('emails/receipt.html.twig',['summary' => $summary]);
                 //render page result
-                return $this->render('ticketing/payment.html.twig' , ['resultMail'=>$resultMail,'checkoutType'=> $checkoutType,'usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
+                return $this->render('ticketing/payment.html.twig' , ['summary' => $summary,'resultMail'=>$resultMail,'checkoutType'=> $checkoutType,'usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
             }
             else
             {
                 //payement not payed
-                return $this->render('ticketing/payment.html.twig' , ['checkoutType'=> 'NotPayed','usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
+                return $this->render('ticketing/payment.html.twig' , ['summary' => $summary,'checkoutType'=> 'NotPayed','usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
             }
         }
         else
         {
             //case payment not already payed 
-            return $this->render('ticketing/payment.html.twig' , ['checkoutType'=> 'NotPayed','usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
+            return $this->render('ticketing/payment.html.twig' , ['summary' => $summary,'checkoutType'=> 'NotPayed','usermail'=>$UserMail,'userSessionID'=> $userSessionID]);
         }
           
        }
@@ -353,7 +381,7 @@ class TicketingController extends AbstractController
        //case paiment aborted
        if($checkoutType == "cancel")
        {
-          return $this->render('ticketing/payment.html.twig' , ['checkoutType'=> $checkoutType]);  
+          return $this->render('ticketing/payment.html.twig' , ['summary' => $summary,'checkoutType'=> $checkoutType]);  
        }
     }
 

@@ -2,7 +2,7 @@
 
 {% block javascripts %}
 <script>
-document.getElementById("btn_resa").style="display:none";
+//document.getElementById("btn_resa").style="display:none";
 </script>
 {% endblock %}
 
@@ -45,9 +45,9 @@ document.getElementById("btn_resa").style="display:none";
 		{% endfor %}
 		<hr/>
 				<a href="{{ path('edit', {id:summary.id}) }}"class="btn btn-success">Modifier</a>
-				<a href="/ticketing/{{summary.id}}/payment"class="btn btn-success">Valider</a>
+				<a href="/ticketing/{{summary.id}}/payment"class="btn btn-success">Payer</a>
 		</section>
-
+<div style="height:100px">&nbsp;</div>
 {% endblock %}
 
 
