@@ -76,7 +76,7 @@ class TicketingController extends AbstractController
        
         $form->handleRequest($request);
    
-        //create futur uuuid
+        //create futur uuid
         $choice->setUuid(Uuid::uuid4());
 
        
