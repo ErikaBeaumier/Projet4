@@ -21,7 +21,7 @@ class VisitorType extends AbstractType
             ->add('birthday', DateType::class, array(
               'widget' => 'single_text','label' => 'Date de naissance'))
             ->add('country', TextType::class, ['label' => 'Pays'])
-            ->add('reduc', CheckboxType::class, ['label' => 'Réduction','required' => false]);
+            ->add('reduc', CheckboxType::class, ['label' => 'Réduction (il sera nécessaire de présenter sa carte d’étudiant, militaire ou équivalent lors de l’entrée pour prouver qu’on bénéficie bien du tarif réduit)','required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

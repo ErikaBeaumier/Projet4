@@ -30,6 +30,7 @@
 			var MoisPaques = 3 + Math.floor((L + 40)/44)
 			var JourPaques = L + 28 - 31*Math.floor(MoisPaques/4)
 			var Paques = new Date(an, MoisPaques-1, JourPaques)
+			
 			//var VendrediSaint = new Date(an, MoisPaques-1, JourPaques-2) // not a holydays in paris : only in East France
 			var LundiPaques = new Date(an, MoisPaques-1, JourPaques+1)
 			var Ascension = new Date(an, MoisPaques-1, JourPaques+39)
@@ -81,7 +82,7 @@
 			//prepare for not working days 
 			var found = false;
 			//Liste of workding days : Calculate it for the current year
-			var list = JoursFeries(new Date().getFullYear());
+			var list = JoursFeries(date.getFullYear());
 
 			//Prepare sold out days
 			var soldOutsDays = [];
@@ -160,7 +161,11 @@
 		{{ form_start(formChoice) }}
 
 		{{ form_row(formChoice.visit) }}
-		
+		<div style="color:red">
+			{% if  canBuyTickets == false   %}
+				Vous ne pouvez acheter que {{canBuyTicketsAmount}} billets pour cette date
+			{% endif %}
+		</div>
 		<div>
 			<label class="switch">
 				<span class="slider round"></span>
