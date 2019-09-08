@@ -66,6 +66,10 @@ class TicketingController extends AbstractController
      */    
     public function ChoiceForm(SessionInterface $session,EntityManagerInterface $em, Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
     {
+
+        error_reporting(E_ALL);
+        ini_set("display_errors", 1);
+
         //init du formulaire
         if(!$choice)
         {
