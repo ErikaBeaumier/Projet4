@@ -67,96 +67,101 @@ class TicketingController extends AbstractController
     public function ChoiceForm(SessionInterface $session,EntityManagerInterface $em, Choice $choice = null, Request $request, ObjectManager $manager, Schedule $schedule)
     {
 
-        //error_reporting(E_ALL);
-        //ini_set("display_errors", 1);
+       try
+       {
 
-        //init du formulaire
-        if(!$choice)
-        {
-            $choice = new Choice();
-        }            
-        //create forms
-        $form = $this->createForm(ChoiceType::class, $choice);
-       
-        $form->handleRequest($request);
-   
-        //create futur uuid
-        $choice->setUuid(Uuid::uuid4());
-
-       
-
-        //prepare to filter date when more than 1 000 tickets
-        //SQL : SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where visit > DATE_SUB(curdate(), INTERVAL 2 DAY) group by `visit` HAVING SUM(tickets) >= 1000
-        $rawSql = " SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where visit > DATE_SUB(curdate(), INTERVAL 2 DAY) group by `visit` HAVING SUM(tickets) >= 1000";
-
-        $stmt = $em->getConnection()->prepare($rawSql);
-        $stmt->execute([]);
-    
-        $result = $stmt->fetchAll();
-        $datesSoldOut = array();
+            //init du formulaire
+            if(!$choice)
+            {
+                $choice = new Choice();
+            }            
+            //create forms
+            $form = $this->createForm(ChoiceType::class, $choice);
         
-        //Create a array of sold out date and use it for calendar and test if possible to buy the number of tickets
-        $canBuyTickets = true;
-        $canBuyTicketsAmount = 1000;
-        foreach ( $result as $visit){
-            array_push($datesSoldOut,$visit["visit"]);
-        }
+            $form->handleRequest($request);
+    
+            //create futur uuid
+            $choice->setUuid(Uuid::uuid4());
 
+        
 
-        //prepare sql to get total amount of ticket for the selected date
-        if($choice->getVisit() != null)
-        {
-            $rawSql = "SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where date(visit) = date('".$choice->getVisit()->format('Y-m-d')."') group by `visit`";
-           
-     
+            //prepare to filter date when more than 1 000 tickets
+            //SQL : SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where visit > DATE_SUB(curdate(), INTERVAL 2 DAY) group by `visit` HAVING SUM(tickets) >= 1000
+            $rawSql = " SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where visit > DATE_SUB(curdate(), INTERVAL 2 DAY) group by `visit` HAVING SUM(tickets) >= 1000";
+
             $stmt = $em->getConnection()->prepare($rawSql);
             $stmt->execute([]);
         
             $result = $stmt->fetchAll();
-                  
+            $datesSoldOut = array();
+            
+            //Create a array of sold out date and use it for calendar and test if possible to buy the number of tickets
+            $canBuyTickets = true;
+            $canBuyTicketsAmount = 1000;
             foreach ( $result as $visit){
-                if($choice->getVisit()->format('Y-m-d') == $visit["visit"]) // for the selected date
-                {
-                    //check if under 1000
-                    if(($visit["totaltickets"]+$choice->getTickets())>1000)
+                array_push($datesSoldOut,$visit["visit"]);
+            }
+
+
+            //prepare sql to get total amount of ticket for the selected date
+            if($choice->getVisit() != null)
+            {
+                $rawSql = "SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where date(visit) = date('".$choice->getVisit()->format('Y-m-d')."') group by `visit`";
+            
+        
+                $stmt = $em->getConnection()->prepare($rawSql);
+                $stmt->execute([]);
+            
+                $result = $stmt->fetchAll();
+                    
+                foreach ( $result as $visit){
+                    if($choice->getVisit()->format('Y-m-d') == $visit["visit"]) // for the selected date
                     {
-                        //can't take the amount
-                        $canBuyTickets = false;
-                        //display the max amount for the user
-                        $canBuyTicketsAmount = 1000 - $visit["totaltickets"];
-                    } 
+                        //check if under 1000
+                        if(($visit["totaltickets"]+$choice->getTickets())>1000)
+                        {
+                            //can't take the amount
+                            $canBuyTickets = false;
+                            //display the max amount for the user
+                            $canBuyTicketsAmount = 1000 - $visit["totaltickets"];
+                        } 
+                    }
                 }
             }
-        }
-        
+            
 
 
-        if($form->isSubmitted() && $form->isValid())
-        {
-
-            //test if choice number of ticket is ok
-           if($canBuyTickets)
+            if($form->isSubmitted() && $form->isValid())
             {
-                //choice is ok : persist it
-                
-                $manager->persist($choice);
-                $manager->flush();
-                $session->set('currentChoiceID', $choice->getId());
-     
-                return $this->redirect("/ticketing/". $choice->getId()."/edit");
-            }
-        }
-        
 
-        /*
-				var parts ='{{dateSolddout}}'.split('-');
-				// Please pay attention to the month (parts[1]); JavaScript counts months from 0:
-				// January - 0, February - 1, etc.
-				var mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
-        */
-       
-        return $this->render('ticketing/index.html.twig', ['canBuyTicketsAmount'=>$canBuyTicketsAmount,'canBuyTickets'=> $canBuyTickets,'datesSoldOut'=>$datesSoldOut,'halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
-        ]);
+                //test if choice number of ticket is ok
+            if($canBuyTickets)
+                {
+                    //choice is ok : persist it
+                    
+                    $manager->persist($choice);
+                    $manager->flush();
+                    $session->set('currentChoiceID', $choice->getId());
+        
+                    return $this->redirect("/ticketing/". $choice->getId()."/edit");
+                }
+            }
+            
+
+            /*
+                    var parts ='{{dateSolddout}}'.split('-');
+                    // Please pay attention to the month (parts[1]); JavaScript counts months from 0:
+                    // January - 0, February - 1, etc.
+                    var mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
+            */
+        
+            return $this->render('ticketing/index.html.twig', ['canBuyTicketsAmount'=>$canBuyTicketsAmount,'canBuyTickets'=> $canBuyTickets,'datesSoldOut'=>$datesSoldOut,'halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
+            ]);
+        }
+        catch (Exception $e) {
+            fwrite(STDERR, $e->getMessage());
+            //echo 'Exception reçue : ',  $e->getMessage(), "\n";
+        }
     }    
 
      /**
