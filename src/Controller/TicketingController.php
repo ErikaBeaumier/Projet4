@@ -401,7 +401,7 @@ class TicketingController extends AbstractController
                 $UserMail =  $customer->email;
                 //send email
                 $message = (new \Swift_Message('Billeterie du Louvre'))
-                ->setFrom('billetries@projet4OpenClassRoom.com')
+                ->setFrom('louvre.ticketing@gmail.com')
                 ->setTo($UserMail)
                 ->setBody(
                     $this->renderView(

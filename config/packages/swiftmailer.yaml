@@ -1,3 +1,8 @@
 swiftmailer:
-    url: '%env(MAILER_URL)%'
+    transport: gmail
+    auth_mode: login 
+    port: 465 
+    host: smtp.gmail.com 
+    username: 'louvre.ticketing@gmail.com' 
+    password: 'Fleurs12&' 
     spool: { type: 'memory' }
