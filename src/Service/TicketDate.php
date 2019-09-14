@@ -75,7 +75,7 @@ class TicketDate
         $day = $selectedDate->format("w");
         if(in_array($day, $this->closedDays))
         {
-            fwrite(STDERR, "closed day");
+            
             return false;
         }
 
@@ -83,7 +83,7 @@ class TicketDate
         foreach ($this->soldoutDays as $value){
             if(\DateTime::createFromFormat('Y-m-j', $value)->format("j") == $selectedDate->format("j") && \DateTime::createFromFormat('Y-m-j', $value)->format("m") == $selectedDate->format("m"))
                { 
-                fwrite(STDERR, "sold out");
+                
                    return false;
                }
 
@@ -93,7 +93,7 @@ class TicketDate
         foreach ($this->notWorkingDays as $value){
             if($value->format("j") == $selectedDate->format("j") && $value->format("m") == $selectedDate->format("m"))
             { 
-                fwrite(STDERR, "holydays");
+                
                 return false;
             }
         }
@@ -109,7 +109,7 @@ class TicketDate
         // On compare les deux dates
         if($today > $shortSelectedDate)
         { 
-            fwrite(STDERR, "in the past");
+            
             return false;
         }
 
@@ -119,7 +119,7 @@ class TicketDate
             $finalHour = $this->schedule->getClosedHourTickets();
             if(date('H') >= $finalHour)
             { 
-                fwrite(STDERR, "after hour");
+                
                 return false;
             }
         }
@@ -133,7 +133,7 @@ class TicketDate
 
         if( $limiteDate < $shortSelectedDate)
         { 
-            fwrite(STDERR, "to far");
+            
             return false;
         }
 
