@@ -23,6 +23,7 @@ class Ticket
     //convert a visitor into a tickers with prices calcultated by age, reduction and day/halfday
     public function loadTicket($visitor,$prices,$ages,$isHalfDay): float
     {
+      
         //load visitor into tickets
         $this->id = $visitor->getId();
         $this->name = $visitor->getName();
@@ -34,7 +35,7 @@ class Ticket
         
         //calculate the price
         $this->loadPrice($prices,$ages,$isHalfDay);
-    
+ 
         //return prices of the tickets
         return $this->price;
     }
@@ -42,9 +43,11 @@ class Ticket
     //calcultate the price by calcultated by age, reduction and day/halfday
     private function loadPrice($prices,$ages,$isHalfDay)
     {
+       
         $age = $this->age($this->birthday);
-     
+        
         //by default
+        
         $this->price = $prices->getPrice('adult',$isHalfDay, $this->reduc);  
         $this->tarifType = "adult";
         //set reduc
@@ -55,6 +58,7 @@ class Ticket
         }
         if($ages->isChild($age) == true)
         {
+           
             $this->tarifType = "child";
             $this->price = $prices->getPrice('child',$isHalfDay, $this->reduc);    
         }     
