@@ -19,6 +19,7 @@ use App\Service\Schedule;
 use App\Service\Prices;
 use App\Service\Ages;
 use App\Service\Summary;
+use App\Service\TicketDate;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -103,39 +104,51 @@ class TicketingController extends AbstractController
             }
 
 
+
             //prepare sql to get total amount of ticket for the selected date
             if($choice->getVisit() != null)
             {
-                $rawSql = "SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where date(visit) = date('".$choice->getVisit()->format('Y-m-d')."') group by `visit`";
+                //test if days is open
+                $helperTicketDate = new TicketDate($schedule->getClosedDay(),$datesSoldOut,null, $schedule);
+                $canBuyTickets = $helperTicketDate->isOpen($choice->getVisit());
+                if(!$canBuyTickets)
+                 $canBuyTicketsAmount = -1; //negate the buy for display in twig
+
+                if($canBuyTickets)
+                {
+                    //test if it s still possible to buy ticket and how much
+                    $rawSql = "SELECT `visit`, SUM(`tickets`) as totaltickets FROM `choice` where date(visit) = date('".$choice->getVisit()->format('Y-m-d')."') group by `visit`";
+                
             
-        
-                $stmt = $em->getConnection()->prepare($rawSql);
-                $stmt->execute([]);
-            
-                $result = $stmt->fetchAll();
-                    
-                foreach ( $result as $visit){
-                    if($choice->getVisit()->format('Y-m-d') == $visit["visit"]) // for the selected date
-                    {
-                        //check if under 1000
-                        if(($visit["totaltickets"]+$choice->getTickets())>1000)
+                    $stmt = $em->getConnection()->prepare($rawSql);
+                    $stmt->execute([]);
+                
+                    $result = $stmt->fetchAll();
+                        
+                    foreach ( $result as $visit){
+                        if($choice->getVisit()->format('Y-m-d') == $visit["visit"]) // for the selected date
                         {
-                            //can't take the amount
-                            $canBuyTickets = false;
-                            //display the max amount for the user
-                            $canBuyTicketsAmount = 1000 - $visit["totaltickets"];
-                        } 
+                            //check if under 1000
+                            if(($visit["totaltickets"]+$choice->getTickets())>1000)
+                            {
+                                //can't take the amount
+                                $canBuyTickets = false;
+                                //display the max amount for the user
+                                $canBuyTicketsAmount = 1000 - $visit["totaltickets"];
+                            } 
+                        }
                     }
                 }
+
             }
             
 
-
+            
             if($form->isSubmitted() && $form->isValid())
             {
 
                 //test if choice number of ticket is ok
-            if($canBuyTickets)
+                if($canBuyTickets)
                 {
                     //choice is ok : persist it
                     
@@ -155,7 +168,7 @@ class TicketingController extends AbstractController
                     var mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
             */
         
-            return $this->render('ticketing/index.html.twig', ['canBuyTicketsAmount'=>$canBuyTicketsAmount,'canBuyTickets'=> $canBuyTickets,'datesSoldOut'=>$datesSoldOut,'halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
+            return $this->render('ticketing/index.html.twig', ['canBuyTicketsAmount'=>$canBuyTicketsAmount,'canBuyTickets'=> $canBuyTickets,'datesSoldOut'=>$datesSoldOut,'halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closedDays'=>$schedule->getClosedDay(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
             ]);
         }
         catch (Exception $e) {

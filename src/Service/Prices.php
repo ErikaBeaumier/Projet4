@@ -43,7 +43,7 @@ class Prices
         $table = $this->standard();
         $price = $table[$ticketType];
       
-       //var_dump($price);
+      
         if($HalfDays)
          $price = $price* $this->reduc;
         if($reduc)

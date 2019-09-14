@@ -44,6 +44,7 @@ class AgesTest extends TestCase
         $this->assertTrue($result);
     }
 
+    //Check if the loading of the age is corect
     public function testGetAges()
     {
         $goodResult = array([4],[12],[60],[130]);

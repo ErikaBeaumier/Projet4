@@ -75,10 +75,14 @@
 		//open day in datepicker
 		function isOpen(date)
 		{
-			//2 days closed
+			// days closed
 			var day = date.getDay();
-			var closed = [0,2];
-	
+			var closed = [] // [0,2]; // default value// now it takes from config file
+
+			{% for closeDay in closedDays %}
+				closed.push({{closeDay}});
+			{% endfor %}
+
 			//prepare for not working days 
 			var found = false;
 			//Liste of workding days : Calculate it for the current year
@@ -162,9 +166,13 @@
 
 		{{ form_row(formChoice.visit) }}
 		<div style="color:red">
-			{% if  canBuyTickets == false   %}
+			{% if  canBuyTickets == false  and canBuyTicketsAmount > 0 %}
 				Vous ne pouvez acheter que {{canBuyTicketsAmount}} billets pour cette date
 			{% endif %}
+			{% if  canBuyTickets == false and canBuyTicketsAmount <= 0 %}
+				Vous ne pouvez pas acheter de billets pour cette date
+			{% endif %}
+
 		</div>
 		<div>
 			<label class="switch">
