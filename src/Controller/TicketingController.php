@@ -160,14 +160,7 @@ class TicketingController extends AbstractController
                 }
             }
             
-
-            /*
-                    var parts ='{{dateSolddout}}'.split('-');
-                    // Please pay attention to the month (parts[1]); JavaScript counts months from 0:
-                    // January - 0, February - 1, etc.
-                    var mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
-            */
-        
+       
             return $this->render('ticketing/index.html.twig', ['canBuyTicketsAmount'=>$canBuyTicketsAmount,'canBuyTickets'=> $canBuyTickets,'datesSoldOut'=>$datesSoldOut,'halfTicketsMaxHour' => $schedule->getHalfTicketsMaxHour(),'closedDays'=>$schedule->getClosedDay(),'closeHourTickets'=> $schedule->getClosedHourTickets(),'formChoice' => $form->createView(), 'editMode' => $choice->getId() !== null
             ]);
         }

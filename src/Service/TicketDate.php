@@ -8,12 +8,6 @@ class TicketDate
 
     //A service to help the test of the selected date by the user
 
-    //rules can't buy tick for the folowing date
-
-    //From a list of closed days (tuesday and sunday by default)
-    //Closed not working days
-    //If more than 1 000 tickets sold
-
     private $closedDays;
     private $soldoutDays;
     private $notWorkingDays;
