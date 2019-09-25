@@ -20,7 +20,7 @@ class PriceTest extends TestCase
 
         $result = $prices->getPrice($ticketType,$halfDay,$reduc);
 
-        //Adult tickets, for hald day and reduction : result is : 16*0,5(halday) : 8
+        //Adult tickets, for half day and reduction : result is : 16*0,5(halday) : 8
         $this->assertEquals(8,$result);
 
     }

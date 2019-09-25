@@ -13,7 +13,7 @@ class TicketDate
     private $notWorkingDays;
     private $schedule;
 
-    //Load the helper, If notWorkding Days is null, load default notworkingdays
+    //Load the helper, If notWorking Days is null, load default notworkingdays
     public function __construct($closedDays,$soldoutDays,$notWorkingDays,$scheduleParam)
     {
         $this->closedDays = $closedDays;
@@ -97,7 +97,7 @@ class TicketDate
         $today = new \DateTime('today');
         //clean date 
         $today =  \DateTime::createFromFormat('Y-m-d', date_format($today, 'Y-m-d'));
-        //cleanse date 2
+        //cleane date 2
         $shortSelectedDate = \DateTime::createFromFormat('Y-m-d', date_format($selectedDate, 'Y-m-d'));
 
         // On compare les deux dates
