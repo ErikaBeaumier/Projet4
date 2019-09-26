@@ -418,7 +418,7 @@ class TicketingController extends AbstractController
                 )
                 ;
                 
-
+                session_destroy();
                 $resultMail = $mailer->send($message,$failures);
                 //Uncomment to test mail render
                // return $this->render('emails/receipt.html.twig',['summary' => $summary]);
